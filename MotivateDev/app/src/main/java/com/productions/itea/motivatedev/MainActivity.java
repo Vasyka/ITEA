@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     .setAvailableProviders(Arrays.asList(
                             new AuthUI.IdpConfig.EmailBuilder().build(),
                             new AuthUI.IdpConfig.GoogleBuilder().build()))
-                            .build(), RC_SIGN_IN);
+                            .setIsSmartLockEnabled(false).build(), RC_SIGN_IN);
 
         }
         setContentView(R.layout.activity_main);
@@ -134,21 +134,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signOut(View view) {
-            AuthUI.getInstance()
-                    .signOut(this)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                startActivity(MainActivity.createIntent(MainActivity.this));
-                                finish();
-                            } else {
-                                showSnackbar(R.string.sign_out_failed);
-                            }
-                        }});
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            startActivity(MainActivity.createIntent(MainActivity.this));
+                            finish();
+                        } else {
+                            showSnackbar(R.string.sign_out_failed);
+                        }
+                    }
+                });
 
 
     }
-
 
 }
