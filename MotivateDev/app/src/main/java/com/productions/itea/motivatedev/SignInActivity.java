@@ -43,11 +43,10 @@ public class SignInActivity extends AppCompatActivity {
 
         startActivityForResult(
                 // Get an instance of AuthUI based on the default app
-                AuthUI.getInstance().createSignInIntentBuilder()
-                        .setAvailableProviders(Arrays.asList(
+                AuthUI.getInstance().createSignInIntentBuilder().setAvailableProviders(Arrays.asList(
                                 new AuthUI.IdpConfig.EmailBuilder().build(),
                                 new AuthUI.IdpConfig.GoogleBuilder().build()))
-                        .setIsSmartLockEnabled(false).build(), RC_SIGN_IN);
+                        .setIsSmartLockEnabled(false).setTheme(R.style.GreenTheme).build(), RC_SIGN_IN);
     }
 
     @Override
