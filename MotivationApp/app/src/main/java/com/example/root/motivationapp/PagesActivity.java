@@ -33,7 +33,7 @@ public class PagesActivity extends FragmentActivity
 
     ListView tasksList;
 
-    public static final ArrayList<String> tasks = new ArrayList<String>();
+    public static final ArrayList<String> tasks = new ArrayList<>();
 
     ArrayAdapter<String> tasksAdapter;
 
@@ -43,16 +43,15 @@ public class PagesActivity extends FragmentActivity
 
         setContentView(R.layout.activity_pages);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
 
-        tasksList = (ListView) findViewById(R.id.taskList);
+        tasksList = findViewById(R.id.taskList);
 
-        tasksAdapter = new ArrayAdapter<String>(this,
+        tasksAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, tasks);
-
-        tasksList.setAdapter(tasksAdapter);
+        //tasksList.setAdapter(tasksAdapter);
 
     }
 
@@ -80,7 +79,7 @@ public class PagesActivity extends FragmentActivity
         tasksAdapter.notifyDataSetChanged();
     }
     private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+         ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
