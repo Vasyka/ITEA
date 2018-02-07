@@ -16,4 +16,8 @@ public class myTask {
         this.description = description;
         this.photoUrl = photoUrl != null ? photoUrl.toString() : "";
     }
+
+    public String toString(){
+        return task_name;
+    }
 }

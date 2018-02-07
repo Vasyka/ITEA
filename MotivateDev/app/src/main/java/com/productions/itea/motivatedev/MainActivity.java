@@ -8,8 +8,15 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -52,7 +59,21 @@ public class MainActivity extends AppCompatActivity {
         Snackbar.make(findViewById(R.id.container), getResources().getString(id), Snackbar.LENGTH_LONG).show();
     }
 
-    class TaskAdapter {
+    private static class TaskViewHolder extends RecyclerView.ViewHolder {
+
+        public TextView taskView;
+
+
+        public TaskViewHolder(View itemView) {
+            super(itemView);
+
+            taskView = itemView.findViewById(R.id.my_text_view);
+
+        }
+
+    }
+
+    class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
         DatabaseReference myRef;
         Context mContext;
 
@@ -65,19 +86,23 @@ public class MainActivity extends AppCompatActivity {
             myRef = ref;
             mContext = context;
 
+
+
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                    Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+                    Log.d("HHHHHHHHHHHHHHHH", "onChildAdded:" + dataSnapshot.getKey());
 
                     // A new task has been added, add it to the displayed list
                     myTask mytask = dataSnapshot.getValue(myTask.class);
+                    Log.d(TAG,"myTask:" + mytask.toString());
 
                     // Update
                     myTaskIds.add(dataSnapshot.getKey());
                     myTasks.add(mytask);
 
                     //Update Listview
+                    notifyItemInserted(myTasks.size() - 1);
 
                 }
 
@@ -97,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                         myTasks.set(taskIndex, mytask);
 
                         //Update Listview
+                        notifyItemChanged(taskIndex);
 
                     } else {
                         Log.w(TAG, "onChildChanged:unknown_child:" + taskKey);
@@ -118,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         myTaskIds.remove(taskIndex);
 
                         //Update Listview
+                        notifyItemRemoved(taskIndex);
 
                     } else {
                         Log.w(TAG, "onChildChanged:unknown_child:" + taskKey);
@@ -138,19 +165,39 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+                    Log.w(TAG, "Tasks:onCancelled", databaseError.toException());
                     Toast.makeText(mContext, "Failed to load tasks.", Toast.LENGTH_SHORT).show();
                 }
             };
             ref.addChildEventListener(childEventListener);
         }
 
+        public int getItemCount() {
+            return myTasks.size();
+        }
+
+        public void onBindViewHolder(TaskViewHolder holder, int position) {
+            // - get element from your dataset at this position
+            // - replace the contents of the view with that element
+            holder.taskView.setText(myTasks.get(position).task_name);
+        }
+
+        // Create new views (invoked by the layout manager)
+        public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater inflater = LayoutInflater.from(mContext);
+            View view = inflater.inflate(R.layout.task_layout, parent, false);
+
+            // set the view's size, margins, paddings and layout parameters
+
+            return new TaskViewHolder(view);
+        }
     }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser curUser = mAuth.getCurrentUser();
 
@@ -186,38 +233,44 @@ public class MainActivity extends AppCompatActivity {
             myUser user = new myUser(username, email, photoUrl);
             userRef.child(uid).setValue(user);
 
-        } else {
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-        }
-        setContentView(R.layout.activity_main);
-    }
 
-    List<String> myTaskIds = new ArrayList<>();
-    List<myTask> myTasks = new ArrayList<>();
-    private Context mContext;
-    @Override
-    public void onStart() {
-        super.onStart();
+            //tasks
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser curUser = mAuth.getCurrentUser();
-        if (curUser != null) { //if signed in
-            String uid = curUser.getUid();
+            RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv);
+
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+            mRecyclerView.setLayoutManager(mLayoutManager);
+
 
             //Current tasks
             DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
+            curTasksRef.child("1").setValue(new myTask("jjj","kkk",null));
+
             TaskAdapter curTaskAdapter = new TaskAdapter(this, curTasksRef);
+
+
+
+            mRecyclerView.setAdapter(curTaskAdapter);
 
             //Ended tasks
             DatabaseReference endedTasksRef = myDb.getReference("ended_tasks").child(uid);
             TaskAdapter endedTaskAdapter = new TaskAdapter(this, endedTasksRef);
 
-        }
-        else {
+            //mRecyclerView1.setAdapter(endedTaskAdapter);
+
+        } else {
             startActivity(new Intent(this, SignInActivity.class));
             finish();
         }
+
+    }
+
+    private void createTask(View view) {
+
+    }
+
+    private void deleteTask(View view) {
+
     }
 
 
