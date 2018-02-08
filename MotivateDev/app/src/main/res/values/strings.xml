@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">MotivateDev</string>
 
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="profile_avatar">Profile avatar</string>
+
     <!-- Auth UI -->
     <string name="launch_title">FirebaseUI Auth Demo</string>
     <string name="sign_in">Start</string>

@@ -16,7 +16,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SignInActivity"></activity>
+        <activity android:name=".SignInActivity"/>
+        <activity android:name=".TaskEditingActivity" />
+        <activity android:name=".RatingActivity" />
+        <activity android:name=".GroupActivity" />
+        <activity android:name=".TaskTakingActivity" />
+
     </application>
 
 </manifest>

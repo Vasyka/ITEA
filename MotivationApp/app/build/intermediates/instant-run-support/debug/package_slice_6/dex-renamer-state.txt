@@ -1,0 +1,4 @@
+#Thu Feb 08 01:31:31 MSK 2018
+base.0=/Users/Aska/GitHub/ITEA/MotivationApp/app/build/intermediates/transforms/dexMerger/debug/26
+path.0=classes.dex
+renamed.0=classes.dex

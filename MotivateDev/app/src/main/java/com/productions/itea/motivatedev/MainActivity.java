@@ -1,12 +1,17 @@
 package com.productions.itea.motivatedev;
 
-import android.app.Activity;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +19,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,41 +39,188 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Comment;
-
 import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-    // Choose an arbitrary request code value
-    private static final int RC_SIGN_IN = 123;
-    // Database
-    private FirebaseDatabase myDb;
+public class MainActivity extends FragmentActivity
+        implements
+        MyTasksFragment.OnMyTasksFragmentInteractionListener,
+        MyGroupsFragment.OnMyGroupsFragmentInteractionListener{
 
-    public static Intent createIntent(Context context) {
-        return new Intent(context, SignInActivity.class);
+    private static final String TAG = "MainActivity";
+    private static final int RC_SIGN_IN = 123;
+
+    private static final int NUM_PAGES = 4;
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
+
+    private TaskAdapter curTaskAdapter;
+    private FirebaseDatabase myDb; // Database
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Firebase Auth
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser curUser = mAuth.getCurrentUser();
+
+        // Check if user is signed in
+        if (curUser != null) {
+
+            // Instance of database
+            myDb = FirebaseDatabase.getInstance();
+            DatabaseReference userRef  = myDb.getReference("users");
+
+            // User Info
+            String username = "";
+            String email = "";
+            Uri photoUrl = null;
+            String uid = "";
+
+            // Get current user info from different providers
+            for (UserInfo profile : curUser.getProviderData()) {
+                String providerId  = profile.getProviderId();
+
+                if (providerId.equals("firebase")) {
+                    uid = profile.getUid();
+                    username = profile.getDisplayName();
+                    email = profile.getEmail();
+                    photoUrl = profile.getPhotoUrl();
+                }
+                else {
+                    if (providerId.equals("google.com")) {
+                        username = profile.getDisplayName();
+                        photoUrl = profile.getPhotoUrl();
+                    }
+                }
+            }
+
+            // Add current user info to database
+            myUser user = new myUser(username, email, photoUrl);
+            userRef.child(uid).setValue(user);
+
+            // Slider
+            mPager = findViewById(R.id.pager);
+            mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+            mPager.setAdapter(mPagerAdapter);
+
+            // adding sample task
+            myDb.getReference("curr_tasks").child(uid).child("2").setValue(new myTask("project","Android project",null,null));
+
+            // View for tasks
+            LayoutInflater inflater = getLayoutInflater();
+            View rootView = inflater.inflate(R.layout.fragment_my_tasks, null,false);
+            RecyclerView mRecyclerView = (RecyclerView)rootView.findViewById(R.id.rec_view);
+            Log.d("HHHHHHHHHH", mRecyclerView == null ? "0000000" : "1111111");
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
+
+            mRecyclerView.setLayoutManager(mLayoutManager);
+
+            //Current tasks
+            DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
+            curTaskAdapter = new TaskAdapter(this, curTasksRef);
+            mRecyclerView.setAdapter(curTaskAdapter);
+
+            //curTasksRef.child("1").setValue(new myTask("jjj","kkk",null));
+            /*//Ended tasks
+            DatabaseReference endedTasksRef = myDb.getReference("ended_tasks").child(uid);
+            TaskAdapter endedTaskAdapter = new TaskAdapter(this, endedTasksRef);
+            mRecyclerView1.setAdapter(endedTaskAdapter);*/
+
+        } else {
+            startActivity(new Intent(this, SignInActivity.class));
+            finish();
+        }
     }
 
-    private void showSnackbar(int id) {
-        Snackbar.make(findViewById(R.id.container), getResources().getString(id), Snackbar.LENGTH_LONG).show();
+    @Override
+    public void onBackPressed() {
+        if (mPager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            mPager.setCurrentItem(mPager.getCurrentItem() - 1);
+        }
+    }
+
+    @Override
+    public void onBtnPressed() {
+        Intent intent = new Intent(MainActivity.this, TaskEditingActivity.class);
+        intent.putExtra("taskName", "default");
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        curTaskAdapter.notifyDataSetChanged();
+    }
+
+    public void signOut(View view) {
+        AuthUI.getInstance().signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            startActivity(new Intent(MainActivity.this, SignInActivity.class));
+                            finish();
+                        } else {
+                            Snackbar.make(findViewById(R.id.container), getResources().
+                                    getString(R.string.sign_out_failed), Snackbar.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+
+
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
+        ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+
+            switch (position){
+                case 0: return new MyTasksFragment();
+                case 1: return new MyGroupsFragment();
+                case 2: return new TrophiesFragment();
+                case 3: return new SolvedTasksFragment();
+                default: return new MyTasksFragment();
+            }
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch(position){
+                case 0: return "Мой профиль";
+                case 1: return "Мои группы";
+                case 2: return "Мои награды";
+                case 3: return "Выполненные задания";
+                default: return "0";
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
     }
 
     private static class TaskViewHolder extends RecyclerView.ViewHolder {
-
         public TextView taskView;
-
 
         public TaskViewHolder(View itemView) {
             super(itemView);
-
             taskView = itemView.findViewById(R.id.my_text_view);
-
         }
-
     }
 
     class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
@@ -87,21 +237,19 @@ public class MainActivity extends AppCompatActivity {
             mContext = context;
 
 
-
             ChildEventListener childEventListener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                    Log.d("HHHHHHHHHHHHHHHH", "onChildAdded:" + dataSnapshot.getKey());
+                    Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
                     // A new task has been added, add it to the displayed list
                     myTask mytask = dataSnapshot.getValue(myTask.class);
-                    Log.d(TAG,"myTask:" + mytask.toString());
 
                     // Update
                     myTaskIds.add(dataSnapshot.getKey());
                     myTasks.add(mytask);
 
-                    //Update Listview
+                    //Update Recycleview
                     notifyItemInserted(myTasks.size() - 1);
 
                 }
@@ -121,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                         // Replace with the new data
                         myTasks.set(taskIndex, mytask);
 
-                        //Update Listview
+                        //Update Recycleview
                         notifyItemChanged(taskIndex);
 
                     } else {
@@ -143,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                         myTasks.remove(taskIndex);
                         myTaskIds.remove(taskIndex);
 
-                        //Update Listview
+                        //Update Recycleview
                         notifyItemRemoved(taskIndex);
 
                     } else {
@@ -176,10 +324,10 @@ public class MainActivity extends AppCompatActivity {
             return myTasks.size();
         }
 
+        // Place item[position] in holder
         public void onBindViewHolder(TaskViewHolder holder, int position) {
-            // - get element from your dataset at this position
-            // - replace the contents of the view with that element
             holder.taskView.setText(myTasks.get(position).task_name);
+            //holder.taskView.setText("LLLLL");
         }
 
         // Create new views (invoked by the layout manager)
@@ -193,107 +341,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser curUser = mAuth.getCurrentUser();
-
-        if (curUser != null) { //if signed in
-
-            // Instance of database
-            myDb = FirebaseDatabase.getInstance();
-            DatabaseReference userRef  = myDb.getReference("users");
-
-            // User Info
-            String username = "";
-            String email = "";
-            Uri photoUrl = null;
-            String uid = "";
-
-            //get info from another provider
-            for (UserInfo profile : curUser.getProviderData()) {
-                String providerId  = profile.getProviderId();
-                Log.d("PROVIDERID",providerId);
-                if (providerId.equals("firebase")) {
-                    uid = profile.getUid();
-                    username = profile.getDisplayName();
-                    email = profile.getEmail();
-                    photoUrl = profile.getPhotoUrl();
-                }
-                if (providerId.equals("google.com")) {
-                    username = profile.getDisplayName();
-                    photoUrl = profile.getPhotoUrl();
-                }
-            }
-
-            //add cur user to db
-            myUser user = new myUser(username, email, photoUrl);
-            userRef.child(uid).setValue(user);
-
-
-            //tasks
-
-            RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv);
-
-            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-
-
-            //Current tasks
-            DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
-            curTasksRef.child("1").setValue(new myTask("jjj","kkk",null));
-
-            TaskAdapter curTaskAdapter = new TaskAdapter(this, curTasksRef);
-
-
-
-            mRecyclerView.setAdapter(curTaskAdapter);
-
-            //Ended tasks
-            DatabaseReference endedTasksRef = myDb.getReference("ended_tasks").child(uid);
-            TaskAdapter endedTaskAdapter = new TaskAdapter(this, endedTasksRef);
-
-            //mRecyclerView1.setAdapter(endedTaskAdapter);
-
-        } else {
-            startActivity(new Intent(this, SignInActivity.class));
-            finish();
-        }
-
-    }
-
-    private void createTask(View view) {
-
-    }
-
-    private void deleteTask(View view) {
-
-    }
-
-
-    public void signOut(View view) {
-        AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            startActivity(MainActivity.createIntent(MainActivity.this));
-                            finish();
-                        } else {
-                            showSnackbar(R.string.sign_out_failed);
-                        }
-                    }
-                });
-
-
-
-    }
-
-
-    }
+}
 
 
