@@ -1,14 +1,22 @@
 package com.productions.itea.motivatedev;
 
+import android.content.Intent;
 import android.nfc.FormatException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,35 +25,68 @@ import java.util.Locale;
 import java.util.Calendar;
 import java.util.Date;
 
-public class TaskEditingActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
+public class TaskEditingActivity extends AppCompatActivity {//implements CompoundButton.OnCheckedChangeListener {
 
+    static final String EXTRA_TASK_STATE = "Add";
     String name;
     TextView title;
     EditText description;
     EditText date;
     myTask data;
-    ToggleButton edit;
+    Button save;
+    String task_state;
+    String uid;
+    //ToggleButton edit;
+
+    DatabaseReference taskRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_editing);
 
+        // Instance of database
+        FirebaseDatabase myDb = FirebaseDatabase.getInstance();
+        taskRef = myDb.getReference("curr_tasks");
+
+        task_state = getIntent().getStringExtra(EXTRA_TASK_STATE);
         name = getIntent().getStringExtra("taskName");
+        uid = getIntent().getStringExtra("uid");
         title = (TextView) findViewById(R.id.titleView);
         description = (EditText) findViewById(R.id.notesTextView);
         date = (EditText) findViewById(R.id.dateView);
         loadData(name);
-        setWriteble(false);
+        setWriteble(true);
 
-        edit = (ToggleButton) findViewById(R.id.toggleEdit);
-        edit.setOnCheckedChangeListener(this);
+        save = (Button) findViewById(R.id.saveBtn);
+        save.setOnClickListener(saveButtonClickListener);
+
+        //edit = (ToggleButton) findViewById(R.id.toggleEdit);
+        //edit.setOnCheckedChangeListener(this);
 
     }
 
+    View.OnClickListener saveButtonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(TaskEditingActivity.this,"Are you sure?)",Toast.LENGTH_SHORT).show();
+
+            data.task_name = title.getText().toString();
+            data.description = description.getText().toString();
+            data.date = date.getText().toString();
+            data.photoUrl = "";
+            String task_id = "3"; // Should be generated and passed from main!
+            taskRef.child(uid).child(task_id).setValue(data);
+
+            Intent intent = new Intent(TaskEditingActivity.this, MainActivity.class);
+            intent.putExtra("taskName", data.task_name);
+            startActivity(intent);
+        }
+    };
+
     private void loadData(String name) {
 
-        if (name.equals("default")) {
+        if (task_state.equals("Add")) {
             data = BaseEmul.defaultTask;
         } else {
             data = BaseEmul.myTasks.get(name);
@@ -53,7 +94,7 @@ public class TaskEditingActivity extends AppCompatActivity implements CompoundBu
 
         title.setText(data.task_name);
         description.setText(data.description);
-        date.setText(data.toString());
+        date.setText(data.date);
     }
 
     void setWriteble(boolean state) {
@@ -68,7 +109,10 @@ public class TaskEditingActivity extends AppCompatActivity implements CompoundBu
         date.setCursorVisible(state);
     }
 
-    @Override
+
+
+
+    /*@Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked)
         {
@@ -94,6 +138,6 @@ public class TaskEditingActivity extends AppCompatActivity implements CompoundBu
 
         }
 
-    }
+    }*/
 
 }
