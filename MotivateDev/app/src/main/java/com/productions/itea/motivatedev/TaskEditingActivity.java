@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.nfc.FormatException;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -40,10 +41,16 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
 
     DatabaseReference taskRef;
 
+
+    RecyclerView mRecyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_editing);
+
+
+
 
         // Instance of database
         FirebaseDatabase myDb = FirebaseDatabase.getInstance();

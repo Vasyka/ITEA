@@ -1,10 +1,9 @@
 package com.productions.itea.motivatedev;
 
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.app.Fragment;
+import android.app.Activity;
+import android.app.ActivityGroup;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,9 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,12 +32,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.IgnoreExtraProperties;
-import com.google.firebase.database.ValueEventListener;
 
-import java.lang.ref.Reference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -52,10 +44,16 @@ public class MainActivity extends FragmentActivity
 
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 123;
-
-    private static final int NUM_PAGES = 4;
+    //PageViewer
     private ViewPager mPager;
-    private PagerAdapter mPagerAdapter;
+    public ScreenSlidePagerAdapter mPagerAdapter;
+    private TabLayout tab;
+    //Fragments of PageViewer
+    public MyTasksFragment mTasksFrag;
+    public MyGroupsFragment myGroupsFrag;
+    public TrophiesFragment mTrophiesFrag;
+    public SolvedTasksFragment mSolvedTasksFrag;
+
 
     private TaskAdapter curTaskAdapter;
     private FirebaseDatabase myDb; // Database
@@ -106,27 +104,41 @@ public class MainActivity extends FragmentActivity
             myUser user = new myUser(username, email, photoUrl);
             userRef.child(uid).setValue(user);
 
-            // Slider
-            mPager = findViewById(R.id.pager);
+            // Slider and tab
+            tab = (TabLayout) findViewById(R.id.tab_id);
+            mPager = (ViewPager) findViewById(R.id.pager);
             mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+            mPagerAdapter.AddFragment(new MyTasksFragment(), "My Tasks");
+            mPagerAdapter.AddFragment(new MyGroupsFragment(), "My Groups");
+            mPagerAdapter.AddFragment(new TrophiesFragment(), "My Trophies");
+            mPagerAdapter.AddFragment(new SolvedTasksFragment(), "Solved Tasks");
+            tab.setupWithViewPager(mPager);
             mPager.setAdapter(mPagerAdapter);
+
+            //Fragments references
+            mTasksFrag = (MyTasksFragment) mPagerAdapter.getItem(0);
+            myGroupsFrag = (MyGroupsFragment) mPagerAdapter.getItem(1);
+            mTrophiesFrag = (TrophiesFragment) mPagerAdapter.getItem(2);
+            mSolvedTasksFrag = (SolvedTasksFragment) mPagerAdapter.getItem(3);
+
 
             // adding sample task
             myDb.getReference("curr_tasks").child(uid).child("2").setValue(new myTask("project","Android project",null,null));
 
             // View for tasks
-            LayoutInflater inflater = getLayoutInflater();
-            View rootView = inflater.inflate(R.layout.fragment_my_tasks, null,false);
-            RecyclerView mRecyclerView = (RecyclerView)rootView.findViewById(R.id.rec_view);
-            Log.d("HHHHHHHHHH", mRecyclerView == null ? "0000000" : "1111111");
-            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
-
-            mRecyclerView.setLayoutManager(mLayoutManager);
+//            LayoutInflater inflater = getLayoutInflater();
+//            View rootView = inflater.inflate(R.layout.fragment_my_tasks, null,false);
+//            RecyclerView mRecyclerView = (RecyclerView)rootView.findViewById(R.id.rec_view);
+//            Log.d("HHHHHHHHHH", mRecyclerView == null ? "0000000" : "1111111");
+//            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
+//
+//            mRecyclerView.setLayoutManager(mLayoutManager);
 
             //Current tasks
             DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
             curTaskAdapter = new TaskAdapter(this, curTasksRef);
-            mRecyclerView.setAdapter(curTaskAdapter);
+
+//            mTasksFrag.SetAdapter(curTaskAdapter);
 
             //curTasksRef.child("1").setValue(new myTask("jjj","kkk",null));
             /*//Ended tasks
@@ -160,13 +172,23 @@ public class MainActivity extends FragmentActivity
         String uid = mAuth.getCurrentUser().getUid();
         intent.putExtra("uid",uid);
         intent.putExtra(EXTRA_TASK_STATE,"Add");
-        startActivity(intent);
+        startActivityForResult(intent, 0);
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-        curTaskAdapter.notifyDataSetChanged();
+        if (mTasksFrag.curTaskAdapter!=null)
+            mTasksFrag.curTaskAdapter.notifyDataSetChanged();
+        mPagerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mTasksFrag.curTaskAdapter!=null)
+            mTasksFrag.curTaskAdapter.notifyDataSetChanged();
+        mPagerAdapter.notifyDataSetChanged();
     }
 
     public void signOut(View view) {
@@ -185,51 +207,32 @@ public class MainActivity extends FragmentActivity
                 });
     }
 
+    public void updateShiet() {
+        mTasksFrag.curTaskAdapter.notifyDataSetChanged();
 
-    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter {
-        ScreenSlidePagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
+    }
 
-        @Override
-        public Fragment getItem(int position) {
 
-            switch (position){
-                case 0: return new MyTasksFragment();
-                case 1: return new MyGroupsFragment();
-                case 2: return new TrophiesFragment();
-                case 3: return new SolvedTasksFragment();
-                default: return new MyTasksFragment();
+//    private static class TaskViewHolder extends RecyclerView.ViewHolder {
+//        public TextView taskView;
+//
+//        public TaskViewHolder(View itemView) {
+//            super(itemView);
+//            taskView = itemView.findViewById(R.id.my_text_view);
+//        }
+//    }
+
+    static class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
+
+        public static class TaskViewHolder extends RecyclerView.ViewHolder {
+            public TextView taskView;
+
+            public TaskViewHolder(View itemView) {
+                super(itemView);
+                taskView = itemView.findViewById(R.id.my_text_view);
             }
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch(position){
-                case 0: return "Мой профиль";
-                case 1: return "Мои группы";
-                case 2: return "Мои награды";
-                case 3: return "Выполненные задания";
-                default: return "0";
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return NUM_PAGES;
-        }
-    }
-
-    private static class TaskViewHolder extends RecyclerView.ViewHolder {
-        public TextView taskView;
-
-        public TaskViewHolder(View itemView) {
-            super(itemView);
-            taskView = itemView.findViewById(R.id.my_text_view);
-        }
-    }
-
-    class TaskAdapter extends RecyclerView.Adapter<TaskViewHolder>{
         DatabaseReference myRef;
         Context mContext;
 
@@ -257,7 +260,6 @@ public class MainActivity extends FragmentActivity
 
                     //Update Recycleview
                     notifyItemInserted(myTasks.size() - 1);
-
                 }
 
                 @Override
