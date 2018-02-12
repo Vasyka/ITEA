@@ -26,7 +26,7 @@ public class MyTasksFragment extends Fragment {
     private OnMyTasksFragmentInteractionListener mListener;
     public RecyclerView mRecyclerView;
 
-    public MainActivity.TaskAdapter curTaskAdapter;
+    public TaskAdapter curTaskAdapter;
     private FirebaseDatabase myDb; // Database
 
 
@@ -34,7 +34,7 @@ public class MyTasksFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void SetAdapter(MainActivity.TaskAdapter adapter){
+    public void SetAdapter(TaskAdapter adapter){
         mRecyclerView.setAdapter(adapter);
     }
 
@@ -48,18 +48,6 @@ public class MyTasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_my_tasks, container, false);
 
-        Button createBtn = (Button) v.findViewById(R.id.createBtn);
-        createBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                mListener.onBtnPressed();
-            }
-        });
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.rec_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-
-
-
         // Firebase Auth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser curUser = mAuth.getCurrentUser();
@@ -67,70 +55,23 @@ public class MyTasksFragment extends Fragment {
         // Check if user is signed in
         if (curUser != null) {
 
-            // Instance of database
-            myDb = FirebaseDatabase.getInstance();
-            DatabaseReference userRef  = myDb.getReference("users");
-
-            // User Info
-            String username = "";
-            String email = "";
-            Uri photoUrl = null;
-            String uid = "";
-
-            // Get current user info from different providers
-            for (UserInfo profile : curUser.getProviderData()) {
-                String providerId  = profile.getProviderId();
-
-                if (providerId.equals("firebase")) {
-                    uid = profile.getUid();
-                    username = profile.getDisplayName();
-                    email = profile.getEmail();
-                    photoUrl = profile.getPhotoUrl();
+            Button createBtn = (Button) v.findViewById(R.id.createBtn);
+            createBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View view) {
+                    mListener.onBtnPressed();
                 }
-                else {
-                    if (providerId.equals("google.com")) {
-                        username = profile.getDisplayName();
-                        photoUrl = profile.getPhotoUrl();
-                    }
-                }
-            }
-
-            // Add current user info to database
-            myUser user = new myUser(username, email, photoUrl);
-            userRef.child(uid).setValue(user);
-
-            // adding sample task
-            myDb.getReference("curr_tasks").child(uid).child("2").setValue(new myTask("project","Android project",null,null));
-
-            // View for tasks
-//            LayoutInflater inflater = getLayoutInflater();
-//            View rootView = inflater.inflate(R.layout.fragment_my_tasks, null,false);
-//            RecyclerView mRecyclerView = (RecyclerView)rootView.findViewById(R.id.rec_view);
-//            Log.d("HHHHHHHHHH", mRecyclerView == null ? "0000000" : "1111111");
-//            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(MainActivity.this);
-//
-//            mRecyclerView.setLayoutManager(mLayoutManager);
+            });
+            mRecyclerView = (RecyclerView) v.findViewById(R.id.rec_view);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
             //Current tasks
+            String uid = curUser.getUid();
             DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
-            curTaskAdapter = new MainActivity.TaskAdapter(getActivity(), curTasksRef);
+            curTaskAdapter = new TaskAdapter(getActivity(), curTasksRef);
             SetAdapter(curTaskAdapter);
-
-            //curTasksRef.child("1").setValue(new myTask("jjj","kkk",null));
-            /*//Ended tasks
-            DatabaseReference endedTasksRef = myDb.getReference("ended_tasks").child(uid);
-            TaskAdapter endedTaskAdapter = new TaskAdapter(this, endedTasksRef);
-            mRecyclerView1.setAdapter(endedTaskAdapter);*/
-
         }
 
-
-
-
-
-
         return v;
-
     }
 
     @Override

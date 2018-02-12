@@ -17,20 +17,18 @@
             android:layout_height="108dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
+            android:contentDescription="@string/profile_avatar"
             android:src="@mipmap/ic_launcher"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/profile_avatar"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rec_view"
             android:layout_width="match_parent"
-            android:layout_height="249dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="136dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
+            android:scrollbars="vertical"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
