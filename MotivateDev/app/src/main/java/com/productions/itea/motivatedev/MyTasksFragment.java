@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,8 @@ public class MyTasksFragment extends Fragment {
 
             //Current tasks
             String uid = curUser.getUid();
+            myDb = FirebaseDatabase.getInstance();
+            Log.d("DBDBDBDBD",myDb != null ? "OK" : "Oops" );
             DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
             curTaskAdapter = new TaskAdapter(getActivity(), curTasksRef);
             SetAdapter(curTaskAdapter);

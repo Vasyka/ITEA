@@ -26,7 +26,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rec_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:layout_marginTop="136dp"
             android:scrollbars="vertical"
             app:layout_constraintTop_toTopOf="parent" />
@@ -45,7 +45,7 @@
             app:layout_constraintHorizontal_bias="0.545"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rec_view"
-            app:layout_constraintVertical_bias="0.7" />
+            app:layout_constraintVertical_bias="0.67" />
 
         <Button
             android:id="@+id/exit_button"
@@ -55,7 +55,6 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:onClick="signOut"
-
             android:text="Exit"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -149,7 +149,7 @@ public class MainActivity extends FragmentActivity
         intent.putExtra("taskName", "default");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
-        intent.putExtra("uid",uid);
+        intent.putExtra("uid", uid);
         intent.putExtra(EXTRA_TASK_STATE,"Add");
         startActivityForResult(intent, 0);
     }

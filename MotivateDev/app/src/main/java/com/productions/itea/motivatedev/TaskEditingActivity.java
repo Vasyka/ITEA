@@ -39,7 +39,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     String uid;
     //ToggleButton edit;
 
-    DatabaseReference taskRef;
+    DatabaseReference tasksRef;
 
 
     RecyclerView mRecyclerView;
@@ -49,12 +49,9 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_editing);
 
-
-
-
         // Instance of database
         FirebaseDatabase myDb = FirebaseDatabase.getInstance();
-        taskRef = myDb.getReference("curr_tasks");
+        tasksRef = myDb.getReference("curr_tasks");
 
         task_state = getIntent().getStringExtra(EXTRA_TASK_STATE);
         name = getIntent().getStringExtra("taskName");
@@ -76,14 +73,14 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     View.OnClickListener saveButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Toast.makeText(TaskEditingActivity.this,"Are you sure?)",Toast.LENGTH_SHORT).show();
+            Toast.makeText(TaskEditingActivity.this,"Saved!",Toast.LENGTH_SHORT).show();
 
             data.task_name = title.getText().toString();
             data.description = description.getText().toString();
             data.date = date.getText().toString();
             data.photoUrl = "";
-            String task_id = "3"; // Should be generated and passed from main!
-            taskRef.child(uid).child(task_id).setValue(data);
+            DatabaseReference newTaskRef = tasksRef.child(uid).push();
+            newTaskRef.setValue(data);
 
             Intent intent = new Intent(TaskEditingActivity.this, MainActivity.class);
             intent.putExtra("taskName", data.task_name);
