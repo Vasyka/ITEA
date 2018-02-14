@@ -1,22 +1,29 @@
 package com.productions.itea.motivatedev;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +35,13 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
         Button doneButton;
+        public ImageButton menuImageButton;
 
         TaskViewHolder(View itemView) {
             super(itemView);
             taskView = itemView.findViewById(R.id.my_text_view);
             doneButton = itemView.findViewById(R.id.done_button);
+            menuImageButton = itemView.findViewById((R.id.task_menu));
         }
     }
 
@@ -136,9 +145,10 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     }
 
     // Place item[position] in holder
-    public void onBindViewHolder(TaskViewHolder holder, int position) {
+    public void onBindViewHolder(final TaskViewHolder holder, int position) {
         holder.taskView.setText(myTasks.get(position).task_name);
 
+        // "Done"
         holder.doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,10 +162,37 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                 String curUser = mRef.getKey();
                 DatabaseReference mainRef = mRef.getRoot();
                 DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
-                //myTask task = solvedTasksRef.
+                solvedTasksRef.push().setValue(myTasks.get(holder.getAdapterPosition()));
+                mRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
+                // getAdapterPosition() can cause some errors:(
             }
         });
 
+        // Menu
+        holder.menuImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(mContext, holder.menuImageButton);
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.task_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    // Handle clicks on menu items
+                    public boolean onMenuItemClick (MenuItem menuItem){
+                        switch (menuItem.getItemId()) {
+                            case R.id.edit_task:
+                                return true;
+                            case R.id.delete_task:
+                                return true;
+                            case R.id.important_task:
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                popup.show();
+            }
+        });
     }
 
     // Create new views (invoked by the layout manager)
@@ -167,4 +204,5 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
         return new TaskViewHolder(view);
     }
+
 }
