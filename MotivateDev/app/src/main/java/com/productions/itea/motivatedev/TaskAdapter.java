@@ -1,11 +1,15 @@
 package com.productions.itea.motivatedev;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,14 +27,17 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     private static final String TAG = "MainActivity";
     static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
+        Button doneButton;
 
         TaskViewHolder(View itemView) {
             super(itemView);
             taskView = itemView.findViewById(R.id.my_text_view);
+            doneButton = itemView.findViewById(R.id.done_button);
         }
     }
 
     private Context mContext;
+    private DatabaseReference mRef;
 
     private List<String> myTaskIds = new ArrayList<>();
     private List<myTask> myTasks = new ArrayList<>();
@@ -39,6 +46,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     public TaskAdapter(Context context, DatabaseReference ref) {
 
         mContext = context;
+        mRef = ref;
 
 
         ChildEventListener childEventListener = new ChildEventListener() {
@@ -130,7 +138,24 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     // Place item[position] in holder
     public void onBindViewHolder(TaskViewHolder holder, int position) {
         holder.taskView.setText(myTasks.get(position).task_name);
-        //holder.taskView.setText("LLLLL");
+
+        holder.doneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Congratulations dialog
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+                dialogBuilder.setMessage("Task was done!").
+                        setTitle("Congratulations!!").setIcon(R.mipmap.confetti1);
+                dialogBuilder.create().show();
+
+                // Deleting the task from current tasks db and adding to solved
+                String curUser = mRef.getKey();
+                DatabaseReference mainRef = mRef.getRoot();
+                DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
+                //myTask task = solvedTasksRef.
+            }
+        });
+
     }
 
     // Create new views (invoked by the layout manager)

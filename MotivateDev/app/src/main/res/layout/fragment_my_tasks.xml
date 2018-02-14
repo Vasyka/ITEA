@@ -29,6 +29,8 @@
             android:layout_height="300dp"
             android:layout_marginTop="136dp"
             android:scrollbars="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
