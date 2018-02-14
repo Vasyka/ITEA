@@ -1,12 +1,8 @@
 package com.productions.itea.motivatedev;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,7 +13,6 @@ import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,9 +30,6 @@ public class MyTasksFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public void SetAdapter(TaskAdapter adapter){
-        mRecyclerView.setAdapter(adapter);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +51,7 @@ public class MyTasksFragment extends Fragment {
             Button createBtn = (Button) v.findViewById(R.id.createBtn);
             createBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    mListener.onBtnPressed();
+                    mListener.onBtnCreateTaskPressed();
                 }
             });
             mRecyclerView = (RecyclerView) v.findViewById(R.id.rec_view);
@@ -71,7 +63,7 @@ public class MyTasksFragment extends Fragment {
             Log.d("DBDBDBDBD",myDb != null ? "OK" : "Oops" );
             DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
             curTaskAdapter = new TaskAdapter(getActivity(), curTasksRef);
-            SetAdapter(curTaskAdapter);
+            mRecyclerView.setAdapter(curTaskAdapter);
         }
 
         return v;
@@ -97,6 +89,6 @@ public class MyTasksFragment extends Fragment {
 
 
     public interface OnMyTasksFragmentInteractionListener {
-        void onBtnPressed();
+        void onBtnCreateTaskPressed();
     }
 }

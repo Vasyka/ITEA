@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -37,7 +38,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     Button save;
     String task_state;
     String uid;
-    //ToggleButton edit;
+    CheckBox checkBox;
 
     DatabaseReference tasksRef;
 
@@ -59,6 +60,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         title = (TextView) findViewById(R.id.titleView);
         description = (EditText) findViewById(R.id.notesTextView);
         date = (EditText) findViewById(R.id.dateView);
+        checkBox = (CheckBox) findViewById(R.id.important_check);
         loadData(name);
         setWriteble(true);
 
@@ -112,36 +114,5 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         date.setLongClickable(state);
         date.setCursorVisible(state);
     }
-
-
-
-
-    /*@Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked)
-        {
-            setWriteble(true);
-        }
-        else{
-            setWriteble(false);
-            data.task_name = title.getText().toString();
-            data.description = description.getText().toString();
-            try {
-                Date today = Calendar.getInstance().getTime();
-                data.date = (new SimpleDateFormat("MMMM d, yyyy", Locale.ROOT)).format(today);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (BaseEmul.myTasks.containsKey(data.task_name)){
-                BaseEmul.myTasks.put(data.task_name, data);
-            }else{
-                BaseEmul.myTasks.put(data.task_name, data);
-                //MainActivity.tasks.add(name);
-            }
-
-
-        }
-
-    }*/
 
 }

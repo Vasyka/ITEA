@@ -1,25 +1,14 @@
 package com.productions.itea.motivatedev;
 
-import android.app.Activity;
-import android.app.ActivityGroup;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,14 +16,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends FragmentActivity
@@ -51,7 +34,7 @@ public class MainActivity extends FragmentActivity
     //Fragments of PageViewer
     public MyTasksFragment mTasksFrag;
     public MyGroupsFragment myGroupsFrag;
-    public TrophiesFragment mTrophiesFrag;
+    public ImportantFragment mTrophiesFrag;
     public SolvedTasksFragment mSolvedTasksFrag;
 
 
@@ -110,7 +93,7 @@ public class MainActivity extends FragmentActivity
             mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
             mPagerAdapter.AddFragment(new MyTasksFragment(), "My Tasks");
             mPagerAdapter.AddFragment(new MyGroupsFragment(), "My Groups");
-            mPagerAdapter.AddFragment(new TrophiesFragment(), "My Trophies");
+            mPagerAdapter.AddFragment(new ImportantFragment(), "My Trophies");
             mPagerAdapter.AddFragment(new SolvedTasksFragment(), "Solved Tasks");
             tab.setupWithViewPager(mPager);
             mPager.setAdapter(mPagerAdapter);
@@ -118,7 +101,7 @@ public class MainActivity extends FragmentActivity
             //Fragments references
             mTasksFrag = (MyTasksFragment) mPagerAdapter.getItem(0);
             myGroupsFrag = (MyGroupsFragment) mPagerAdapter.getItem(1);
-            mTrophiesFrag = (TrophiesFragment) mPagerAdapter.getItem(2);
+            mTrophiesFrag = (ImportantFragment) mPagerAdapter.getItem(2);
             mSolvedTasksFrag = (SolvedTasksFragment) mPagerAdapter.getItem(3);
 
             //Current tasks
@@ -144,7 +127,7 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
-    public void onBtnPressed() {
+    public void onBtnCreateTaskPressed() {
         Intent intent = new Intent(MainActivity.this, TaskEditingActivity.class);
         intent.putExtra("taskName", "default");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -191,6 +174,10 @@ public class MainActivity extends FragmentActivity
 
     }
 
+    @Override
+    public void onBtnSearchPressed() {
+
+    }
 }
 
 
