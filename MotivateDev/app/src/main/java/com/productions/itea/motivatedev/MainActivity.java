@@ -8,16 +8,24 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.data.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 
 public class MainActivity extends FragmentActivity
@@ -50,7 +58,7 @@ public class MainActivity extends FragmentActivity
 
         // Firebase Auth
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser curUser = mAuth.getCurrentUser();
+        final FirebaseUser curUser = mAuth.getCurrentUser();
 
         // Check if user is signed in
         if (curUser != null) {
@@ -64,6 +72,7 @@ public class MainActivity extends FragmentActivity
             String email = "";
             Uri photoUrl = null;
             String uid = "";
+            HashMap<String, Boolean> groups = null;
 
             // Get current user info from different providers
             for (UserInfo profile : curUser.getProviderData()) {
@@ -82,10 +91,37 @@ public class MainActivity extends FragmentActivity
                     }
                 }
             }
+            final myUser user = new myUser(username, email, photoUrl, groups);
+            final DatabaseReference curUserRef = userRef.child(uid);
 
-            // Add current user info to database
-            myUser user = new myUser(username, email, photoUrl);
-            userRef.child(uid).setValue(user);
+            // Check user's existence in database
+            userRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // If user exits
+                    if(dataSnapshot.exists()){
+                        Log.d(TAG, "User exists");
+                        // Load user's groups
+                        /*for (DataSnapshot groupSnapshot: dataSnapshot.child("groups").getChildren()) {
+                            Log.d(TAG, groupSnapshot.getKey() != null ? "JJ" : "LL");
+                            String groupKey = groupSnapshot.getKey();
+                            //Boolean value = (Boolean) groupSnapshot.child(groupKey).getValue();
+                            groups.put(groupKey, true);
+                        }*/
+
+                    } else { // User does not exist
+                        // Add current user info to database
+                        curUserRef.setValue(user);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.w(TAG, "Users:onCancelled", databaseError.toException());
+                }
+            });
+
+
 
             // Slider and tab
             tab = (TabLayout) findViewById(R.id.tab_id);

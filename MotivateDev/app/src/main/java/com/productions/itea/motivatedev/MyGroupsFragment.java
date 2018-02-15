@@ -59,12 +59,12 @@ public class MyGroupsFragment extends Fragment {
             mRecyclerView = (RecyclerView) v.findViewById(R.id.groups_rec);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-            //Current tasks
+            //Current groups
             String uid = curUser.getUid();
             myDb = FirebaseDatabase.getInstance();
-            Log.d("DBDBDBDBD",myDb != null ? "OK" : "Oops" );
-            DatabaseReference curTasksRef = myDb.getReference("groups").child(uid);
-            groupsAdapter = new GroupsAdapter(getActivity(), curTasksRef);
+            Log.d("DBDBDBDBD", myDb != null ? "OK" : "Oops" );
+            DatabaseReference groupsRef = myDb.getReference("users").child(uid).child("groups");
+            groupsAdapter = new GroupsAdapter(getActivity(), groupsRef);
             mRecyclerView.setAdapter(groupsAdapter);
         }
 
