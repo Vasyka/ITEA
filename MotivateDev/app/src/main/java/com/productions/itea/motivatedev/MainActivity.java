@@ -212,7 +212,8 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onBtnSearchPressed() {
-
+        Intent intent = new Intent(MainActivity.this, GroupsSearchActivity.class);
+        startActivity(intent);
     }
 }
 
