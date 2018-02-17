@@ -6,17 +6,122 @@
     android:layout_height="match_parent"
     tools:context="com.productions.itea.motivatedev.GroupActivity">
 
+
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/group_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="246dp"
-        android:layout_marginEnd="145dp"
-        android:layout_marginStart="163dp"
-        android:layout_marginTop="247dp"
-        android:text="SOME TEXT"
+        android:layout_margin="8dp"
+        android:layout_marginBottom="166dp"
+        android:layout_marginEnd="124dp"
+        android:layout_marginStart="8dp"
+        android:padding="8dp"
+        android:text="Cats"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/group_photo"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/group_photo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="23dp"
+        android:layout_marginEnd="160dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/common_google_signin_btn_text_dark_focused"
+        android:contentDescription="group_photo"
+        android:cropToPadding="true"
+        android:padding="2dp"
+        android:scaleType="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@mipmap/cat_tea" />
+
+    <View
+        android:id="@+id/view"
+        style="@style/Divider"
+        android:layout_height="2dp"
+        app:layout_constraintBottom_toTopOf="@id/group_task_rec"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/group_description" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/group_task_rec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="8dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/group_description"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/group_description"
+        android:layout_width="208dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:padding="8dp"
+        android:text="Hello! We are a new growing community of cat's lovers. We want to make cats' life better!"
+        android:textSize="22sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/group_photo"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/group_title"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/group_description"
+        app:layout_constraintTop_toBottomOf="@+id/group_photo"
+        app:layout_constraintVertical_bias="0.0">
+
+        <ImageButton
+            android:id="@+id/rating_image"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="4dp"
+            android:background="@color/cardview_light_background"
+            android:contentDescription="rating image"
+            android:scaleType="centerCrop"
+            app:srcCompat="@mipmap/trophy" />
+
+        <ImageButton
+            android:id="@+id/members_image"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="4dp"
+            android:background="@color/cardview_light_background"
+            android:contentDescription="members image"
+            android:scaleType="centerCrop"
+            app:srcCompat="@mipmap/users_group" />
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

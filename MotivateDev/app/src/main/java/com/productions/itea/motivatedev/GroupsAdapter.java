@@ -1,6 +1,8 @@
 package com.productions.itea.motivatedev;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,8 +20,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.net.URI;
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.support.v4.content.ContextCompat.startActivity;
 
 
 class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewHolder>{
@@ -35,6 +40,7 @@ static class GroupViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         groupView = itemView.findViewById(R.id.group_name);
         groupPhotoView = itemView.findViewById(R.id.group_photo);
+
     }
 }
 
@@ -162,13 +168,22 @@ static class GroupViewHolder extends RecyclerView.ViewHolder {
     }
 
     // Place item[position] in holder
-    public void onBindViewHolder(GroupsAdapter.GroupViewHolder holder, int position) {
+    public void onBindViewHolder(final GroupsAdapter.GroupViewHolder holder, int position) {
         holder.groupView.setText(myGroups.get(position).group_name);
         String photo_url = myGroups.get(position).photoUrl;
         if (photo_url != null)
             holder.groupPhotoView.setImageURI(Uri.parse(myGroups.get(position).photoUrl));
         else
             Log.d(TAG, "OOOOO");
+       holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, GroupActivity.class);
+                String group_id = myGroupsIds.get(holder.getAdapterPosition());
+                intent.putExtra("groupId", group_id);
+                v.getContext().startActivity(intent);
+            }
+        });
     }
 
     // Create new views (invoked by the layout manager)

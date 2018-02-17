@@ -21,9 +21,6 @@ public class RatingActivity extends AppCompatActivity {
 
 
 
-    String groupID;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,13 +29,14 @@ public class RatingActivity extends AppCompatActivity {
         FirebaseUser curUser = mAuth.getCurrentUser();
         if (curUser != null) {
 
-            mRecyclerView = (RecyclerView) findViewById(R.id.search_rec);
+            mRecyclerView = (RecyclerView) findViewById(R.id.rating_rec);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+            String group_id = getIntent().getStringExtra("groupId");
             String uid = curUser.getUid();
             myDb = FirebaseDatabase.getInstance();
-            Log.d("DBDBDBDBD", myDb != null ? "OK" : "Oops");
-            DatabaseReference ratingRef = myDb.getReference("rating").child(groupID);
+
+            DatabaseReference ratingRef = myDb.getReference("rating").child(group_id);
             ratingAdapter = new RatingAdapter(this, ratingRef);
             mRecyclerView.setAdapter(ratingAdapter);
         }
