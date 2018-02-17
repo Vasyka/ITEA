@@ -26,84 +26,19 @@ import java.util.List;
 
 public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.ImportantViewHolder> {
 
-    private static final String TAG = "MainActivity";
-
-    @Override
-    public ImportantViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.task_layout, parent, false);
-
-        return new ImportantAdapter.ImportantViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(final ImportantViewHolder holder, int position) {
-
-        holder.taskView.setText(myImportant.get(position).task_name);
-
-        // "Done"
-        holder.doneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Congratulations dialog
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
-                dialogBuilder.setMessage("Task was done!").
-                        setTitle("Congratulations!!").setIcon(R.mipmap.confetti1);
-                dialogBuilder.create().show();
-
-                // Deleting the task from current tasks db and adding to solved
-                String curUser = mRef.getKey();
-                DatabaseReference mainRef = mRef.getRoot();
-                DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
-                solvedTasksRef.push().setValue(myImportant.get(holder.getAdapterPosition()));
-                mRef.child(myImportantIds.get(holder.getAdapterPosition())).removeValue();
-                // getAdapterPosition() can cause some errors:(
-            }
-        });
-
-        // Menu
-        holder.menuImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(mContext, holder.menuImageButton);
-                MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.imp_menu, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    // Handle clicks on menu items
-                    public boolean onMenuItemClick (MenuItem menuItem){
-                        switch (menuItem.getItemId()) {
-                            case R.id.edit_task:
-                                return true;
-                            case R.id.delete_task:
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-                });
-                popup.show();
-            }
-        });
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return myImportant.size();
-    }
+    private static final String TAG = "ImportantAdapter";
 
     static class ImportantViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
-        Button doneButton;
         ImageButton menuImageButton;
 
         ImportantViewHolder(View itemView) {
             super(itemView);
-            taskView = itemView.findViewById(R.id.my_text_view);
-            doneButton = itemView.findViewById(R.id.done_button);
-            menuImageButton = itemView.findViewById((R.id.task_menu));
+            taskView = itemView.findViewById(R.id.my_text_view_solved);
+            menuImageButton = itemView.findViewById(R.id.task_menu);
         }
     }
+
 
     private Context mContext;
     private DatabaseReference mRef;
@@ -122,16 +57,23 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.child("important").getValue(Boolean.class));
 
-                // A new task has been added, add it to the displayed list
-                myTask mytask = dataSnapshot.getValue(myTask.class);
+                // Check that new task is important for user
+                Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
 
-                // Update
-                myImportantIds.add(dataSnapshot.getKey());
-                myImportant.add(mytask);
+                if (important) {
 
-                //Update Recycleview
-                notifyItemInserted(myImportant.size() - 1);
+                    // A new task has been added, add it to the displayed list
+                    myTask mytask = dataSnapshot.getValue(myTask.class);
+
+                    // Update
+                    myImportantIds.add(dataSnapshot.getKey());
+                    myImportant.add(mytask);
+
+                    //Update Recycleview
+                    notifyItemInserted(myImportant.size() - 1);
+                }
             }
 
             @Override
@@ -139,21 +81,52 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
 
                 // A task has changed, use the key to determine if we are displaying this
-                // task and if so displayed the changed task.
-                myTask mytask = dataSnapshot.getValue(myTask.class);
+                // task and is it still important if so displayed the changed task.
 
                 String taskKey = dataSnapshot.getKey();
+                Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
 
                 int taskIndex = myImportantIds.indexOf(taskKey);
                 if (taskIndex > -1) {
-                    // Replace with the new data
-                    myImportant.set(taskIndex, mytask);
 
-                    //Update Recycleview
-                    notifyItemChanged(taskIndex);
+                    // Check that this task is still important for user
+                    if (important) {
+
+                        myTask mytask = dataSnapshot.getValue(myTask.class);
+
+                        // Replace with the new data
+                        myImportant.set(taskIndex, mytask);
+
+                        //Update Recycleview
+                        notifyItemChanged(taskIndex);
+                    }
+                    else { // task isn't important now
+
+                        // Remove data from the list
+                        myImportant.remove(taskIndex);
+                        myImportantIds.remove(taskIndex);
+
+                        //Update Recycleview
+                        notifyItemRemoved(taskIndex);
+                    }
 
                 } else {
-                    Log.w(TAG, "onChildChanged:unknown_child:" + taskKey);
+                    // Check if this task is now important for user
+                    if (important) {
+
+                        // A new task has been added, add it to the displayed list
+                        myTask mytask = dataSnapshot.getValue(myTask.class);
+
+                        // Update
+                        myImportantIds.add(dataSnapshot.getKey());
+                        myImportant.add(mytask);
+
+                        //Update Recycleview
+                        notifyItemInserted(myImportant.size() - 1);
+                    }
+                    else {
+                        Log.w(TAG, "onChildChanged:unknown_child:" + taskKey);
+                    }
                 }
             }
 
@@ -193,12 +166,59 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "Tasks:onCancelled", databaseError.toException());
-                Toast.makeText(mContext, "Failed to load tasks.", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "ImportantTasks:onCancelled", databaseError.toException());
+                Toast.makeText(mContext, "Failed to load important tasks.", Toast.LENGTH_SHORT).show();
             }
         };
         ref.addChildEventListener(childEventListener);
     }
 
+    @Override
+    public void onBindViewHolder(final ImportantViewHolder holder, final int position) {
+
+        holder.taskView.setText(myImportant.get(position).task_name);
+
+
+        // Menu
+        holder.menuImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(mContext, holder.menuImageButton);
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.imp_menu, popup.getMenu());
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    // Handle clicks on menu items
+                    public boolean onMenuItemClick (MenuItem menuItem){
+                        switch (menuItem.getItemId()) {
+                            case R.id.edit_task:
+                                return true;
+                            case R.id.delete_task:
+                                return true;
+                            case R.id.un_important_task: // Make the task unimportant if it is important
+                                if (myImportant.get(position).important)
+                                    mRef.child(myImportantIds.get(position)).child("important").setValue(false);
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                popup.show();
+            }
+        });
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return myImportant.size();
+    }
+
+    @Override
+    public ImportantViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view = inflater.inflate(R.layout.solved_layout, parent, false);
+
+        return new ImportantAdapter.ImportantViewHolder(view);
+    }
 
 }

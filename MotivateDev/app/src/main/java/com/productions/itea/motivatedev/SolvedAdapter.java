@@ -6,9 +6,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +25,7 @@ import java.util.List;
 
 public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedViewHolder> {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "SolvedTaskAdapter";
     static class SolvedViewHolder extends RecyclerView.ViewHolder {
 
         TextView solvedView;
@@ -32,7 +35,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
         SolvedViewHolder(View itemView) {
             super(itemView);
             solvedView = itemView.findViewById(R.id.my_text_view_solved);
-            menuImageButton = itemView.findViewById((R.id.task_menu));
+            menuImageButton = itemView.findViewById(R.id.task_menu);
         }
     }
 
@@ -145,8 +148,37 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
     }
 
     @Override
-    public void onBindViewHolder(SolvedViewHolder holder, int position) {
+    public void onBindViewHolder(final SolvedViewHolder holder, final int position) {
         holder.solvedView.setText(mySolved.get(position).task_name);
+
+        // Menu
+        holder.menuImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(mContext, holder.menuImageButton);
+                MenuInflater inflater = popup.getMenuInflater();
+                inflater.inflate(R.menu.task_menu, popup.getMenu());
+
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    // Handle clicks on menu items
+                    public boolean onMenuItemClick (MenuItem menuItem){
+                        switch (menuItem.getItemId()) {
+                            case R.id.edit_task:
+                                return true;
+                            case R.id.delete_task:
+                                return true;
+                            case R.id.important_task: // Make the task important if it isn't important
+                                if (!mySolved.get(position).important)
+                                    mRef.child(solvedIds.get(position)).child("important").setValue(true);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                });
+                popup.show();
+            }
+        });
 
     }
 

@@ -31,7 +31,7 @@ import java.util.List;
 
 class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "TaskAdapter";
     static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
         Button doneButton;
@@ -41,7 +41,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
             super(itemView);
             taskView = itemView.findViewById(R.id.my_text_view);
             doneButton = itemView.findViewById(R.id.done_button);
-            menuImageButton = itemView.findViewById((R.id.task_menu));
+            menuImageButton = itemView.findViewById(R.id.task_menu);
         }
     }
 
@@ -145,7 +145,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     }
 
     // Place item[position] in holder
-    public void onBindViewHolder(final TaskViewHolder holder, int position) {
+    public void onBindViewHolder(final TaskViewHolder holder, final int position) {
         holder.taskView.setText(myTasks.get(position).task_name);
 
         // "Done"
@@ -183,7 +183,9 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                                 return true;
                             case R.id.delete_task:
                                 return true;
-                            case R.id.important_task:
+                            case R.id.important_task: // Make the task important if it isn't important
+                                if (!myTasks.get(position).important)
+                                    mRef.child(myTaskIds.get(position)).child("important").setValue(true);
                                 return true;
                             default:
                                 return false;

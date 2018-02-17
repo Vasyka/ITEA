@@ -12,21 +12,17 @@ public class myTask {
     public String description;
     public String photoUrl;
     public String date;
+    public Boolean important;
 
     public myTask() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public myTask(String task_name, String description, Uri photoUrl) {
+    public myTask(String task_name, String description, Date date, Uri photoUrl, Boolean important) {
         this.task_name = task_name;
         this.description = description;
         this.photoUrl = photoUrl != null ? photoUrl.toString() : "";
-    }
-
-    public myTask(String task_name, String description, Date date, Uri photoUrl) {
-        this.task_name = task_name;
-        this.description = description;
-        this.photoUrl = photoUrl != null ? photoUrl.toString() : "";
+        this.important = important;
         SimpleDateFormat sdfr = new SimpleDateFormat("dd/MMM/yyyy", Locale.ROOT);
         try {
             this.date = date != null ? sdfr.format(date) : "";

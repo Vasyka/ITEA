@@ -11,5 +11,10 @@
         android:icon="@android:drawable/ic_menu_delete"
         android:title="Delete"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/un_important_task"
+        android:icon="@android:drawable/star_big_on"
+        android:title="Make task important"
+        app:showAsAction="never" />
 
 </menu>

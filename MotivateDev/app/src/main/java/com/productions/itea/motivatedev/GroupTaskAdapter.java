@@ -27,7 +27,7 @@ import java.util.List;
 
 class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskViewHolder>{
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "GroupTaskAdapter";
     static class GroupTaskViewHolder extends RecyclerView.ViewHolder {
         TextView groupTaskView;
         CheckBox getTaskCheckBox;

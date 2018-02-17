@@ -81,6 +81,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
             data.description = description.getText().toString();
             data.date = date.getText().toString();
             data.photoUrl = "";
+            data.important = checkBox.isChecked();
             DatabaseReference newTaskRef = tasksRef.child(uid).push();
             newTaskRef.setValue(data);
 
@@ -101,6 +102,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         title.setText(data.task_name);
         description.setText(data.description);
         date.setText(data.date);
+        checkBox.setChecked(data.important);
     }
 
     void setWriteble(boolean state) {
