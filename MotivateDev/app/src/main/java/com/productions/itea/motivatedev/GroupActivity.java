@@ -1,5 +1,6 @@
 package com.productions.itea.motivatedev;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 
 
-public class GroupActivity extends AppCompatActivity {
+public class GroupActivity extends AppCompatActivity implements GroupTaskAdapter.OnItemClickListener {
 
     public RecyclerView mRecyclerView;
     private FirebaseDatabase myDb;
@@ -52,10 +53,21 @@ public class GroupActivity extends AppCompatActivity {
             myDb = FirebaseDatabase.getInstance();
 
             DatabaseReference groupRef = myDb.getReference("group_tasks").child(group_id);
-            groupTaskAdapter = new GroupTaskAdapter(this, groupRef);
+            groupTaskAdapter = new GroupTaskAdapter(this, groupRef, this);
             mRecyclerView.setAdapter(groupTaskAdapter);
 
         }
 
     }
+
+    @Override
+    public void onItemClicked(View v, String descr) {
+        Bundle bnd = new Bundle();
+        bnd.putString("description", descr);
+        GroupTaskDialog dialog = new GroupTaskDialog();
+        dialog.setArguments(bnd);
+        dialog.show(getFragmentManager(), "Dialog");
+    }
 }
+
+

@@ -17,8 +17,12 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,14 +34,14 @@ import java.util.Date;
 public class TaskEditingActivity extends AppCompatActivity {//implements CompoundButton.OnCheckedChangeListener {
 
     static final String EXTRA_TASK_STATE = "Add";
-    String name;
+//    String name;
     TextView title;
     EditText description;
     EditText date;
     myTask data;
     Button save;
     String task_state;
-    String uid;
+    String uid, taskUid;
     CheckBox checkBox;
 
     DatabaseReference tasksRef;
@@ -55,13 +59,13 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         tasksRef = myDb.getReference("curr_tasks");
 
         task_state = getIntent().getStringExtra(EXTRA_TASK_STATE);
-        name = getIntent().getStringExtra("taskName");
+        taskUid = getIntent().getStringExtra("task_uid");
         uid = getIntent().getStringExtra("uid");
         title = (TextView) findViewById(R.id.titleView);
         description = (EditText) findViewById(R.id.notesTextView);
         date = (EditText) findViewById(R.id.dateView);
         checkBox = (CheckBox) findViewById(R.id.important_check);
-        loadData(name);
+        loadData();
         setWriteble(true);
 
         save = (Button) findViewById(R.id.saveBtn);
@@ -82,21 +86,45 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
             data.date = date.getText().toString();
             data.photoUrl = "";
             data.important = checkBox.isChecked();
-            DatabaseReference newTaskRef = tasksRef.child(uid).push();
-            newTaskRef.setValue(data);
 
-            Intent intent = new Intent(TaskEditingActivity.this, MainActivity.class);
-            intent.putExtra("taskName", data.task_name);
-            startActivity(intent);
+            DatabaseReference newTaskRef;
+            if(taskUid==null){
+            newTaskRef = tasksRef.child(uid).push();
+
+            } else {
+                newTaskRef = tasksRef.child(uid).child(taskUid);
+            }
+            newTaskRef.setValue(data);
+            onBackPressed();
         }
     };
 
-    private void loadData(String name) {
+    private void loadData() {
 
         if (task_state.equals("Add")) {
             data = BaseEmul.defaultTask;
-        } else {
-            data = BaseEmul.myTasks.get(name);
+        } else if (taskUid != null){
+
+
+
+
+
+//            DatabaseReference taskRef = tasksRef.child(uid).child(taskUid);
+//            ValueEventListener event = new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    data = dataSnapshot.getValue(myTask.class);
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//                }
+//            };
+//            taskRef.addListenerForSingleValueEvent(event);
+
+            //just for test, remove it
+            data = new myTask("if it works", "it's is good", new Date(01,01,2001), null,true);
+
         }
 
         title.setText(data.task_name);

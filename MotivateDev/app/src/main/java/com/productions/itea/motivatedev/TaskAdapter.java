@@ -1,5 +1,6 @@
 package com.productions.itea.motivatedev;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -35,7 +36,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
         Button doneButton;
-        public ImageButton menuImageButton;
+        ImageButton menuImageButton;
 
         TaskViewHolder(View itemView) {
             super(itemView);
@@ -52,7 +53,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     private List<myTask> myTasks = new ArrayList<>();
 
 
-    public TaskAdapter(Context context, DatabaseReference ref) {
+    TaskAdapter(Context context, DatabaseReference ref) {
 
         mContext = context;
         mRef = ref;
@@ -171,7 +172,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
         // Menu
         holder.menuImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(final View view) {
                 PopupMenu popup = new PopupMenu(mContext, holder.menuImageButton);
                 MenuInflater inflater = popup.getMenuInflater();
                 inflater.inflate(R.menu.task_menu, popup.getMenu());
@@ -180,6 +181,14 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                     public boolean onMenuItemClick (MenuItem menuItem){
                         switch (menuItem.getItemId()) {
                             case R.id.edit_task:
+
+                                Intent intent = new Intent(mContext, TaskEditingActivity.class);
+                                String taskID = myTaskIds.get(holder.getAdapterPosition());
+                                intent.putExtra("task_uid", taskID);
+                                intent.putExtra("Add", "");
+                                intent.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                view.getContext().startActivity(intent);
+
                                 return true;
                             case R.id.delete_task:
                                 return true;

@@ -165,7 +165,7 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onBtnCreateTaskPressed() {
         Intent intent = new Intent(MainActivity.this, TaskEditingActivity.class);
-        intent.putExtra("taskName", "default");
+//        intent.putExtra("taskName", "default");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
         intent.putExtra("uid", uid);
@@ -205,10 +205,6 @@ public class MainActivity extends FragmentActivity
                 });
     }
 
-    public void updateShiet() {
-        mTasksFrag.curTaskAdapter.notifyDataSetChanged();
-
-    }
 
     @Override
     public void onBtnSearchPressed() {

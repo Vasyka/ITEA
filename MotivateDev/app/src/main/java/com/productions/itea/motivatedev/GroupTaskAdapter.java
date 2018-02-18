@@ -1,7 +1,10 @@
 package com.productions.itea.motivatedev;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.net.sip.SipSession;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +32,16 @@ import java.util.List;
 class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskViewHolder>{
 
     private static final String TAG = "GroupTaskAdapter";
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClicked(View v, String descr);
+    }
+
     static class GroupTaskViewHolder extends RecyclerView.ViewHolder {
         TextView groupTaskView;
         CheckBox getTaskCheckBox;
-        public ImageButton describeButton;
+        ImageButton describeButton;
 
         GroupTaskViewHolder(View itemView) {
             super(itemView);
@@ -48,8 +58,8 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
     private List<myGroupTask> myGroupTasks = new ArrayList<>();
 
 
-    public GroupTaskAdapter(Context context, DatabaseReference ref) {
-
+    public GroupTaskAdapter(Context context, DatabaseReference ref, OnItemClickListener listener) {
+        this.listener = listener;
         mContext = context;
         mRef = ref;
 
@@ -190,7 +200,19 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                 popup.show();
             }
         });
+
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClicked(v, myGroupTasks.get(holder.getAdapterPosition()).description);
+            }
+        });
+
     }
+
+
+
 
     // Create new views (invoked by the layout manager)
     public GroupTaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
