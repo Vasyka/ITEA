@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.productions.itea.motivatedev.MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/material_green_50">
 
     <android.support.design.widget.TabLayout
         android:layout_width="match_parent"

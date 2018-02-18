@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context="com.productions.itea.motivatedev.SolvedTasksFragment">
+    tools:context="com.productions.itea.motivatedev.SolvedTasksFragment"
+    android:background="@color/material_green_50">
 
 <android.support.v7.widget.RecyclerView
     android:id="@+id/solved_rec"

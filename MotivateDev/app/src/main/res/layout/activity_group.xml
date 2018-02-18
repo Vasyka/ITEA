@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.productions.itea.motivatedev.GroupActivity">
+    tools:context="com.productions.itea.motivatedev.GroupActivity"
+    android:background="@color/material_green_50">
 
 
     <TextView
@@ -17,6 +18,7 @@
         android:layout_marginStart="8dp"
         android:padding="8dp"
         android:text="Cats"
+        android:textColor="@color/black"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -72,7 +74,7 @@
 
     <TextView
         android:id="@+id/group_description"
-        android:layout_width="208dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
@@ -80,8 +82,9 @@
         android:layout_marginTop="8dp"
         android:padding="8dp"
         android:text="Hello! We are a new growing community of cat's lovers. We want to make cats' life better!"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="22sp"
-        android:textStyle="italic"
+        android:textStyle="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/group_photo"
         app:layout_constraintHorizontal_bias="0.0"
@@ -90,7 +93,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="151dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
         android:layout_marginEnd="32dp"
@@ -98,10 +101,10 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/group_description"
         app:layout_constraintTop_toBottomOf="@+id/group_photo"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
         <ImageButton
             android:id="@+id/rating_image"
