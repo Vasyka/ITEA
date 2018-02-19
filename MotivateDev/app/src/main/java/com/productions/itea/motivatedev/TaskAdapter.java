@@ -86,7 +86,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                 // Update
                 myTaskIds.add(dataSnapshot.getKey());
                 myTasks.add(mytask);
-                myGroups.add(new myGroup());
+                myGroups.add(new myGroup("","",null));
 
                 //Update Recycleview
                 notifyItemInserted(myTasks.size() - 1);
@@ -165,7 +165,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                 // A new task has been added, add it to the displayed list
 
-                String groupKey = dataSnapshot.child("group").getValue(String.class);
+                final String groupKey = dataSnapshot.child("group").getValue(String.class);
                 Log.d(TAG, "onGroupTaskChildAdded:group" + groupKey);
 
                 // get group task's information
@@ -186,7 +186,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                 // get group info
                 DatabaseReference groupRef = groupTaskRef.getRoot().child("groups").child(groupKey);
-                myGroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         myGroup group = dataSnapshot.getValue(myGroup.class);
@@ -290,16 +290,19 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     public void onBindViewHolder(final TaskViewHolder holder, int position) {
         myTask task = myTasks.get(position);
         holder.taskView.setText(task.task_name);
-        coolChip coolchip = new coolChip("Cats", Uri.parse("android.resource://com.productions.itea.motivatedev/" + R.mipmap.menu3));
 
         if (myTasks.get(position) instanceof myGroupTask) {
             holder.mChipsView.setVisibility(View.VISIBLE);
-            holder.mChipsView.inflateWithChip(coolchip);
+            holder.mChipsView.setTitle(myGroups.get(position).group_name);
+            holder.mChipsView.setHasAvatarIcon(false);
+            holder.mChipsView.setDeletable(false);
 
-            //holder.mChipsView.setTitle("KLLL");
+            // Avatar!
+            //holder.mChipsView.setAvatarIcon(Uri.parse("android.resource://com.productions.itea.motivatedev/" + R.mipmap.cat_tea));
         }
-        else
+        else {
             holder.mChipsView.setVisibility(GONE);
+        }
 
         // "Done"
         holder.doneButton.setOnClickListener(new View.OnClickListener() {
@@ -312,11 +315,21 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                 dialogBuilder.create().show();
 
                 // Deleting the task from current tasks db and adding to solved
-                String curUser = userTaskRef.getKey();
+
                 DatabaseReference mainRef = userTaskRef.getRoot();
+                String curUser = userTaskRef.getKey();
                 DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
                 solvedTasksRef.push().setValue(myTasks.get(holder.getAdapterPosition()));
-                userTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
+
+                // Check that the task is a group task
+                if (myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask) {
+                    groupTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
+
+                    // Here must be rating counting!
+
+                } else
+                    userTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
+
                 // getAdapterPosition() can cause some errors:(
             }
         });

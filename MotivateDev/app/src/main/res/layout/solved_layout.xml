@@ -18,32 +18,49 @@
         card_view:cardCornerRadius="4dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/task_menu"
-                android:layout_width="20dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center_vertical|end"
-                android:layout_margin ="8dp"
-                android:contentDescription="task menu"
-                android:background="@null"
-                android:padding="4dp"
-                android:paddingStart="8dp"
-                android:src="@mipmap/menu3" />
-
-            <TextView
-                android:id="@+id/my_text_view_solved"
+            <com.tylersuehr.chips.ChipView
+                android:id="@+id/solved_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:padding="8dp"
-                android:text="First task"
-                android:textSize="24sp" />
+                android:animateLayoutChanges="false">
 
+            </com.tylersuehr.chips.ChipView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_margin="4dp"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/task_menu"
+                    android:layout_width="20dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_margin="4dp"
+                    android:background="@null"
+                    android:contentDescription="task menu"
+                    android:padding="4dp"
+                    android:paddingStart="8dp"
+                    android:src="@mipmap/menu3" />
+
+                <TextView
+                    android:id="@+id/my_text_view_solved"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:padding="4dp"
+                    android:paddingStart="8dp"
+                    android:text="First task"
+                    android:textSize="24sp" />
+
+
+            </LinearLayout>
 
         </LinearLayout>
 

@@ -2,6 +2,8 @@ package com.productions.itea.motivatedev;
 
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,9 +22,12 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.tylersuehr.chips.ChipView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.view.View.GONE;
 
 public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.ImportantViewHolder> {
 
@@ -31,11 +36,13 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
     static class ImportantViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
         ImageButton menuImageButton;
+        ChipView mChipsView;
 
         ImportantViewHolder(View itemView) {
             super(itemView);
             taskView = itemView.findViewById(R.id.my_text_view_solved);
             menuImageButton = itemView.findViewById(R.id.task_menu);
+            mChipsView = (ChipView) itemView.findViewById(R.id.solved_chip);
         }
     }
 
@@ -178,6 +185,8 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
 
         holder.taskView.setText(myImportant.get(position).task_name);
 
+        holder.mChipsView.setVisibility(GONE);
+
 
         // Menu
         holder.menuImageButton.setOnClickListener(new View.OnClickListener() {
@@ -191,8 +200,46 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                     public boolean onMenuItemClick (MenuItem menuItem){
                         switch (menuItem.getItemId()) {
                             case R.id.edit_task:
+                                /// Check that the task isn't a group task
+                                if (!(myImportant.get(holder.getAdapterPosition()) instanceof myGroupTask)) {
+                                /*
+                                    Intent intent = new Intent(mContext, TaskEditingActivity.class);
+                                    intent.putExtra(EXTRA_TASK_STATE, "Edit");
+
+                                    String taskID = solvedIds.get(holder.getAdapterPosition());
+                                    intent.putExtra("task_id", taskID);
+
+                                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    intent.putExtra("path", "/solved_tasks/" + uid + "/");
+                                    view.getContext().startActivity(intent); */
+                                }
+                                else
+                                    Toast.makeText(mContext, "It is a group task. You can't change it!", Toast.LENGTH_SHORT).show();
                                 return true;
                             case R.id.delete_task:
+                                AlertDialog.Builder builder;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    builder = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog_Alert);
+                                } else {
+                                    builder = new AlertDialog.Builder(mContext);
+                                }
+                                builder.setTitle("Delete task")
+                                        .setMessage("Are you sure you want to delete this task?")
+                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // continue with delete
+                                                String task_id = myImportantIds.get(holder.getAdapterPosition());
+                                                mRef.child(task_id).removeValue();
+
+                                            }
+                                        })
+                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // do nothing
+                                            }
+                                        })
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
                                 return true;
                             case R.id.un_important_task: // Make the task unimportant if it is important
                                 if (myImportant.get(position).important)

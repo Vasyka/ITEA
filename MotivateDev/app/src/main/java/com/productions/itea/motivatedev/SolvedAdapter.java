@@ -30,6 +30,8 @@ import com.tylersuehr.chips.ChipView;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.view.View.GONE;
+
 public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedViewHolder> {
 
     private static final String TAG = "SolvedTaskAdapter";
@@ -45,7 +47,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
             super(itemView);
             solvedView = itemView.findViewById(R.id.my_text_view_solved);
             menuImageButton = itemView.findViewById(R.id.task_menu);
-            mChipsView = (ChipView) itemView.findViewById(R.id.chip);
+            mChipsView = (ChipView) itemView.findViewById(R.id.solved_chip);
         }
     }
 
@@ -78,6 +80,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                 // Update
                 solvedIds.add(dataSnapshot.getKey());
                 mySolved.add(mytask);
+                myGroups.add(new myGroup("","",null));
 
                 //Update Recycleview
                 notifyItemInserted(mySolved.size() - 1);
@@ -118,6 +121,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                     // Remove data from the list
                     mySolved.remove(taskIndex);
                     solvedIds.remove(taskIndex);
+                    myGroups.remove(taskIndex);
 
                     //Update Recycleview
                     notifyItemRemoved(taskIndex);
@@ -175,7 +179,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
                 // get group info
                 DatabaseReference groupRef = groupTaskRef.getRoot().child("groups").child(groupKey);
-                myGroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         myGroup group = dataSnapshot.getValue(myGroup.class);
@@ -285,6 +289,20 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
     @Override
     public void onBindViewHolder(final SolvedViewHolder holder, final int position) {
         holder.solvedView.setText(mySolved.get(position).task_name);
+
+        if (mySolved.get(position) instanceof myGroupTask) {
+            holder.mChipsView.setVisibility(View.VISIBLE);
+            holder.mChipsView.setTitle(myGroups.get(position).group_name);
+            holder.mChipsView.setHasAvatarIcon(false);
+            holder.mChipsView.setDeletable(false);
+
+            // Avatar!
+            //holder.mChipsView.setAvatarIcon(Uri.parse("android.resource://com.productions.itea.motivatedev/" + R.mipmap.cat_tea));
+        }
+        else {
+            holder.mChipsView.setVisibility(GONE);
+        }
+
 
         // Menu
         holder.menuImageButton.setOnClickListener(new View.OnClickListener() {
