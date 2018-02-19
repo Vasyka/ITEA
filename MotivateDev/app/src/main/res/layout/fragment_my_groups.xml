@@ -14,13 +14,14 @@
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/groups_rec"
-            android:layout_width="match_parent"
-            android:layout_height="457dp"
+            android:layout_width="361dp"
+            android:layout_height="379dp"
             android:layout_marginBottom="6dp"
+            android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_btn">
+            app:layout_constraintTop_toBottomOf="@+id/search_btn"
+            app:layout_constraintVertical_bias="1.0">
 
         </android.support.v7.widget.RecyclerView>
 
@@ -28,6 +29,12 @@
             android:id="@+id/search_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="search" />
+            android:layout_marginTop="36dp"
+            android:backgroundTint="@color/bright_green"
+            android:text="search"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp" />
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.productions.itea.motivatedev.MyTasksFragment"
-    android:background="@color/material_green_50">
+    android:background="@color/material_green_50"
+    tools:context="com.productions.itea.motivatedev.MyTasksFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -14,41 +14,32 @@
 
         <ImageView
             android:id="@+id/avatarImg"
-            android:layout_width="108dp"
-            android:layout_height="108dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_width="94dp"
+            android:layout_height="97dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="28dp"
             android:contentDescription="@string/profile_avatar"
             android:src="@mipmap/ic_launcher"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rec_view"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="136dp"
-            android:scrollbars="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <Button
             android:id="@+id/createBtn"
             android:layout_width="357dp"
             android:layout_height="65dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="28dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:background="@color/bright_green"
             android:onClick="onClick"
             android:text="Add task"
+            android:textAlignment="center"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@id/exit_button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.545"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rec_view"
-            app:layout_constraintVertical_bias="0.67" />
+            app:layout_constraintHorizontal_bias="0.461"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/exit_button"
@@ -64,6 +55,15 @@
             app:layout_constraintHorizontal_bias="0.963"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/createBtn" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rec_view"
+            android:layout_width="358dp"
+            android:layout_height="186dp"
+            android:layout_marginTop="160dp"
+            android:scrollbars="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

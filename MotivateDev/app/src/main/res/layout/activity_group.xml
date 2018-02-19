@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.productions.itea.motivatedev.GroupActivity"
-    android:background="@color/material_green_50">
+    android:background="@color/material_green_50"
+    tools:context="com.productions.itea.motivatedev.GroupActivity">
 
 
     <TextView
@@ -58,53 +58,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/group_description" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/group_task_rec"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_marginTop="8dp"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_description"
-        app:layout_constraintVertical_bias="0.0" />
-
     <TextView
         android:id="@+id/group_description"
-        android:layout_width="0dp"
+        android:layout_width="149dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:padding="8dp"
         android:text="Hello! We are a new growing community of cat's lovers. We want to make cats' life better!"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
-        android:textSize="22sp"
+        android:textSize="18sp"
         android:textStyle="normal"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/group_photo"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_title"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/group_title" />
 
     <LinearLayout
-        android:layout_width="151dp"
+        android:layout_width="135dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginStart="30dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="14dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/group_description"
         app:layout_constraintTop_toBottomOf="@+id/group_photo"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintVertical_bias="0.0">
 
         <ImageButton
             android:id="@+id/rating_image"
@@ -126,5 +107,19 @@
             android:scaleType="centerCrop"
             app:srcCompat="@mipmap/users_group" />
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/group_task_rec"
+        android:layout_width="331dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="8dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/group_description"
+        app:layout_constraintVertical_bias="0.309" />
 
 </android.support.constraint.ConstraintLayout>
