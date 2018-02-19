@@ -61,6 +61,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         task_state = getIntent().getStringExtra(EXTRA_TASK_STATE);
         taskUid = getIntent().getStringExtra("task_uid");
         uid = getIntent().getStringExtra("uid");
+
         title = (TextView) findViewById(R.id.titleView);
         description = (EditText) findViewById(R.id.notesTextView);
         date = (EditText) findViewById(R.id.dateView);
@@ -70,9 +71,6 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
 
         save = (Button) findViewById(R.id.saveBtn);
         save.setOnClickListener(saveButtonClickListener);
-
-        //edit = (ToggleButton) findViewById(R.id.toggleEdit);
-        //edit.setOnCheckedChangeListener(this);
 
     }
 

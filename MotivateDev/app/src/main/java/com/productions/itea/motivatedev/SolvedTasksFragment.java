@@ -47,7 +47,17 @@ public class SolvedTasksFragment extends Fragment {
         if (curUser != null){
 
             mRecyclerView = (RecyclerView) v.findViewById(R.id.solved_rec);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity())
+            {
+                @Override
+                public void onLayoutChildren(RecyclerView.Recycler arg0, RecyclerView.State arg1) {
+                    try {
+                        super.onLayoutChildren(arg0, arg1);
+                    } catch (Exception e) {
+                        Log.d("SolvedTaskFragment","onLayoutChildren :" + e.toString());
+                    }
+                }
+            });
 
             String uid = curUser.getUid();
             myDb = FirebaseDatabase.getInstance();
