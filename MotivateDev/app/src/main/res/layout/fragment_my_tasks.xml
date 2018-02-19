@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.productions.itea.motivatedev.MyTasksFragment">
 
+
     <!-- TODO: Update blank fragment layout -->
 
     <android.support.constraint.ConstraintLayout
@@ -37,32 +38,14 @@
             android:id="@+id/createBtn"
             android:layout_width="357dp"
             android:layout_height="65dp"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:onClick="onClick"
             android:text="Add task"
-            app:layout_constraintBottom_toBottomOf="@id/exit_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.545"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rec_view"
-            app:layout_constraintVertical_bias="0.67" />
-
-        <Button
-            android:id="@+id/exit_button"
-            android:layout_width="70dp"
-            android:layout_height="45dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:onClick="signOut"
-            android:text="Exit"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.963"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/createBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/rec_view" />
 
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

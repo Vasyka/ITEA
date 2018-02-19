@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.productions.itea.motivatedev.GroupActivity">
 
-
+<include layout="@layout/toolbar_layout"/>
     <TextView
         android:id="@+id/group_title"
         android:layout_width="wrap_content"

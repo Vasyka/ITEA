@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.productions.itea.motivatedev.TaskEditingActivity">
+    <include layout="@layout/toolbar_layout"/>
 
     <EditText
         android:id="@+id/titleView"
