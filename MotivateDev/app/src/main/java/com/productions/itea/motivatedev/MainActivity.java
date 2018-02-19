@@ -45,8 +45,6 @@ public class MainActivity extends FragmentActivity
     public ImportantFragment mTrophiesFrag;
     public SolvedTasksFragment mSolvedTasksFrag;
 
-
-    private TaskAdapter curTaskAdapter;
     private FirebaseDatabase myDb; // Database
 
     static final String EXTRA_TASK_STATE = "Add";
@@ -139,10 +137,6 @@ public class MainActivity extends FragmentActivity
             myGroupsFrag = (MyGroupsFragment) mPagerAdapter.getItem(1);
             mTrophiesFrag = (ImportantFragment) mPagerAdapter.getItem(2);
             mSolvedTasksFrag = (SolvedTasksFragment) mPagerAdapter.getItem(3);
-
-            //Current tasks
-            DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
-            curTaskAdapter = new TaskAdapter(this, curTasksRef);
 
         } else {
             startActivity(new Intent(this, SignInActivity.class));

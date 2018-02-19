@@ -43,19 +43,6 @@
 
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/task_description"
-            android:layout_width="20dp"
-            android:layout_height="30dp"
-            android:layout_gravity="end|center_vertical"
-            android:layout_margin="8dp"
-            android:background="@null"
-            android:contentDescription="task menu"
-            android:padding="8dp"
-            android:paddingStart="8dp"
-            android:src="@mipmap/arrow_green" />
-
-
     </android.support.v7.widget.CardView>
 
 </LinearLayout>

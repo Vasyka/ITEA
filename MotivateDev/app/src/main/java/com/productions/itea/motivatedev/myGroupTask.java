@@ -12,6 +12,11 @@ public class myGroupTask extends myTask{
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
+    public myGroupTask(String task_name, String description, String date, String photoUrl, Integer complexity, Boolean important) {
+        super(task_name, description, date, photoUrl, important);
+        this.complexity = complexity;
+    }
+
     public myGroupTask(String task_name, String description, Date date, Uri photoUrl, String complexity, Boolean important) {
        super(task_name, description, date, photoUrl, important);
         try

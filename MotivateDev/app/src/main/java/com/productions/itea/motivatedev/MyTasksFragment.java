@@ -48,6 +48,8 @@ public class MyTasksFragment extends Fragment {
         // Check if user is signed in
         if (curUser != null) {
 
+
+
             Button createBtn = (Button) v.findViewById(R.id.createBtn);
             createBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
@@ -55,14 +57,23 @@ public class MyTasksFragment extends Fragment {
                 }
             });
             mRecyclerView = (RecyclerView) v.findViewById(R.id.rec_view);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()) {
+                @Override
+                public void onLayoutChildren(RecyclerView.Recycler arg0, RecyclerView.State arg1) {
+                    try {
+                        super.onLayoutChildren(arg0, arg1);
+                    } catch (Exception e) {
+                        Log.d("MyTaskFragment","onLayoutChildren :" + e.toString());
+                    }
+                }
+            });
 
             //Current tasks
             String uid = curUser.getUid();
             myDb = FirebaseDatabase.getInstance();
-            Log.d("DBDBDBDBD",myDb != null ? "OK" : "Oops" );
             DatabaseReference curTasksRef = myDb.getReference("curr_tasks").child(uid);
-            curTaskAdapter = new TaskAdapter(getActivity(), curTasksRef);
+            DatabaseReference groupTasksRef = myDb.getReference("group_tasks_user").child(uid);
+            curTaskAdapter = new TaskAdapter(getActivity(), curTasksRef, groupTasksRef);
             mRecyclerView.setAdapter(curTaskAdapter);
         }
 

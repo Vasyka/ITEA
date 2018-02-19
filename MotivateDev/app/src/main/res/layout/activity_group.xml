@@ -108,11 +108,23 @@
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_margin="4dp"
-            android:background="@color/cardview_light_background"
+            android:background="@android:color/transparent"
             android:contentDescription="rating image"
             android:scaleType="centerCrop"
             app:srcCompat="@mipmap/trophy" />
 
+        <ImageButton
+            android:id="@+id/leave_group"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_margin="4dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="leaving group image"
+            android:scaleType="centerCrop"
+            app:srcCompat="@mipmap/logout" />
+
+        <!-- Members' button
         <ImageButton
             android:id="@+id/members_image"
             android:layout_width="45dp"
@@ -122,6 +134,7 @@
             android:contentDescription="members image"
             android:scaleType="centerCrop"
             app:srcCompat="@mipmap/users_group" />
+             -->
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -18,6 +18,15 @@ public class myTask {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
+    public myTask(String task_name, String description, String date, String photoUrl, Boolean important) {
+        this.task_name = task_name;
+        this.description = description;
+        this.photoUrl = photoUrl;
+        this.important = important;
+        this.date = date;
+    }
+
+
     public myTask(String task_name, String description, Date date, Uri photoUrl, Boolean important) {
         this.task_name = task_name;
         this.description = description;

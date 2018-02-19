@@ -41,12 +41,10 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
     static class GroupTaskViewHolder extends RecyclerView.ViewHolder {
         TextView groupTaskView;
         CheckBox getTaskCheckBox;
-        ImageButton describeButton;
 
         GroupTaskViewHolder(View itemView) {
             super(itemView);
             groupTaskView = (TextView)itemView.findViewById(R.id.group_task_view);
-            describeButton = (ImageButton) itemView.findViewById(R.id.task_description);
             getTaskCheckBox = (CheckBox) itemView.findViewById((R.id.get_task));
         }
     }
@@ -171,33 +169,6 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                     mRef.child(myGroupTaskIds.get(holder.getAdapterPosition())).removeValue();
                     // getAdapterPosition() can cause some errors:(*/
                 }
-            }
-        });
-
-
-        // Task description
-        holder.describeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PopupMenu popup = new PopupMenu(mContext, holder.describeButton);
-                MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.task_menu, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    // Handle clicks on menu items
-                    public boolean onMenuItemClick (MenuItem menuItem){
-                        switch (menuItem.getItemId()) {
-                            case R.id.edit_task:
-                                return true;
-                            case R.id.delete_task:
-                                return true;
-                            case R.id.important_task:
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-                });
-                popup.show();
             }
         });
 
