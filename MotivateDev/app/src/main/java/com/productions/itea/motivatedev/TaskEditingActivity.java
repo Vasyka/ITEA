@@ -22,8 +22,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Ref;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,7 +36,8 @@ import java.util.Date;
 
 public class TaskEditingActivity extends AppCompatActivity {//implements CompoundButton.OnCheckedChangeListener {
 
-    static final String EXTRA_TASK_STATE = "Add";
+    private static final String EXTRA_TASK_STATE = "task_state";
+    private static final String TAG = "TaskEditingActivity";
 //    String name;
     TextView title;
     EditText description;
@@ -41,7 +45,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     myTask data;
     Button save;
     String task_state;
-    String uid, taskUid;
+    String uid, taskId;
     CheckBox checkBox;
 
     DatabaseReference tasksRef;
@@ -59,13 +63,14 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         tasksRef = myDb.getReference("curr_tasks");
 
         task_state = getIntent().getStringExtra(EXTRA_TASK_STATE);
-        taskUid = getIntent().getStringExtra("task_uid");
+        taskId = getIntent().getStringExtra("task_id");
         uid = getIntent().getStringExtra("uid");
 
         title = (TextView) findViewById(R.id.titleView);
         description = (EditText) findViewById(R.id.notesTextView);
         date = (EditText) findViewById(R.id.dateView);
         checkBox = (CheckBox) findViewById(R.id.important_check);
+
         loadData();
         setWriteble(true);
 
@@ -76,7 +81,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
 
     View.OnClickListener saveButtonClickListener = new View.OnClickListener() {
         @Override
-        public void onClick(View view) {
+        public void onClick(View view) { // Save inputed values
             Toast.makeText(TaskEditingActivity.this,"Saved!",Toast.LENGTH_SHORT).show();
 
             data.task_name = title.getText().toString();
@@ -86,11 +91,15 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
             data.important = checkBox.isChecked();
 
             DatabaseReference newTaskRef;
-            if(taskUid==null){
-            newTaskRef = tasksRef.child(uid).push();
+            if (taskId == null) {
+                Log.d(TAG, "task_id is null");
+                throw new NullPointerException();
+            }
+            if (taskId.trim().isEmpty()){
+                newTaskRef = tasksRef.child(uid).push();
 
             } else {
-                newTaskRef = tasksRef.child(uid).child(taskUid);
+                newTaskRef = tasksRef.child(uid).child(taskId);
             }
             newTaskRef.setValue(data);
             onBackPressed();
@@ -98,33 +107,34 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     };
 
     private void loadData() {
-
-        if (task_state.equals("Add")) {
+        // Create new tenplate task
+        if (task_state.equals("Add"))
             data = BaseEmul.defaultTask;
-        } else if (taskUid != null){
+        else { // Load existing data
 
+            DatabaseReference curTaskRef = tasksRef.child(uid).child(taskId);
 
+            curTaskRef.runTransaction(new Transaction.Handler() {
+                @Override
+                public Transaction.Result doTransaction(MutableData mutableData) {
+                    data = mutableData.getValue(myTask.class);
+                    title.setText(data.task_name);
+                    description.setText(data.description);
+                    date.setText(data.date);
+                    checkBox.setChecked(data.important);
 
+                    return Transaction.success(mutableData);
+                }
 
-
-//            DatabaseReference taskRef = tasksRef.child(uid).child(taskUid);
-//            ValueEventListener event = new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    data = dataSnapshot.getValue(myTask.class);
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//                }
-//            };
-//            taskRef.addListenerForSingleValueEvent(event);
-
-            //just for test, remove it
-            data = new myTask("if it works", "it's is good", new Date(01,01,2001), null,true);
+                @Override
+                public void onComplete(DatabaseError databaseError, boolean b,
+                                       DataSnapshot dataSnapshot) {
+                    // Transaction completed
+                    Log.d(TAG, "myTaskTransaction:onComplete:" + databaseError);
+                }
+            });
 
         }
-
         title.setText(data.task_name);
         description.setText(data.description);
         date.setText(data.date);

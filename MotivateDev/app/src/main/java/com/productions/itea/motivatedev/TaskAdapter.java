@@ -39,6 +39,8 @@ import static android.view.View.GONE;
 class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
     private static final String TAG = "TaskAdapter";
+    static final String EXTRA_TASK_STATE = "task_state";
+
     static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
         Button doneButton;
@@ -331,12 +333,18 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                         switch (menuItem.getItemId()) {
                             case R.id.edit_task:
 
-                                Intent intent = new Intent(mContext, TaskEditingActivity.class);
-                                String taskID = myTaskIds.get(holder.getAdapterPosition());
-                                intent.putExtra("task_uid", taskID);
-                                intent.putExtra("Add", "");
-                                intent.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                view.getContext().startActivity(intent);
+                                // Check that the task isn't a group task
+                                if (!(myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask)) {
+
+                                    Intent intent = new Intent(mContext, TaskEditingActivity.class);
+                                    String taskID = myTaskIds.get(holder.getAdapterPosition());
+                                    intent.putExtra("task_id", taskID);
+                                    intent.putExtra(EXTRA_TASK_STATE, "Edit");
+                                    intent.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                    view.getContext().startActivity(intent);
+                                }
+                                else
+                                    Toast.makeText(mContext, "It is a group task. You can't change it!", Toast.LENGTH_SHORT).show();
 
                                 return true;
                             case R.id.delete_task:

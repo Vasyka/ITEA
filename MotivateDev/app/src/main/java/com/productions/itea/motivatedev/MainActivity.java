@@ -47,7 +47,7 @@ public class MainActivity extends FragmentActivity
 
     private FirebaseDatabase myDb; // Database
 
-    static final String EXTRA_TASK_STATE = "Add";
+    static final String EXTRA_TASK_STATE = "task_state";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +163,7 @@ public class MainActivity extends FragmentActivity
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
         intent.putExtra("uid", uid);
+        intent.putExtra("task_id", "");
         intent.putExtra(EXTRA_TASK_STATE,"Add");
         startActivityForResult(intent, 0);
     }
