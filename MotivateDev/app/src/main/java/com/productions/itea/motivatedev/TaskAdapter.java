@@ -2,9 +2,11 @@ package com.productions.itea.motivatedev;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -251,7 +253,6 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                     //Update Recycleview
                     notifyItemRemoved(taskIndex);
-                    notifyDataSetChanged();
 
                 } else {
                     Log.w(TAG, "onGroupTaskChildChanged:unknown_child:" + groupTaskKey);
@@ -337,10 +338,13 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                                 if (!(myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask)) {
 
                                     Intent intent = new Intent(mContext, TaskEditingActivity.class);
+                                    intent.putExtra(EXTRA_TASK_STATE, "Edit");
+
                                     String taskID = myTaskIds.get(holder.getAdapterPosition());
                                     intent.putExtra("task_id", taskID);
-                                    intent.putExtra(EXTRA_TASK_STATE, "Edit");
-                                    intent.putExtra("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    intent.putExtra("path", "/curr_tasks/" + uid + "/");
                                     view.getContext().startActivity(intent);
                                 }
                                 else
@@ -348,6 +352,31 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                                 return true;
                             case R.id.delete_task:
+                                AlertDialog.Builder builder;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                    builder = new AlertDialog.Builder(mContext, android.R.style.Theme_Material_Dialog_Alert);
+                                } else {
+                                    builder = new AlertDialog.Builder(mContext);
+                                }
+                                builder.setTitle("Delete task")
+                                        .setMessage("Are you sure you want to delete this task?")
+                                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // continue with delete
+                                                String task_id = myTaskIds.get(holder.getAdapterPosition());
+                                                if (myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask)
+                                                    groupTaskRef.child(task_id).removeValue();
+                                                else
+                                                    userTaskRef.child(task_id).removeValue();
+                                            }
+                                        })
+                                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // do nothing
+                                            }
+                                        })
+                                        .setIcon(android.R.drawable.ic_dialog_alert)
+                                        .show();
                                 return true;
                             case R.id.important_task: // Make the task important if it isn't important
                                 if (!myTasks.get(holder.getAdapterPosition()).important)

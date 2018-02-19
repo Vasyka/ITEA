@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity
 //        intent.putExtra("taskName", "default");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
-        intent.putExtra("uid", uid);
+        intent.putExtra("path", "/curr_tasks/" + uid + "/");
         intent.putExtra("task_id", "");
         intent.putExtra(EXTRA_TASK_STATE,"Add");
         startActivityForResult(intent, 0);

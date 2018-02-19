@@ -24,6 +24,7 @@ import android.widget.ToggleButton;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,9 +53,10 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     myTask data;
     Button save;
     String task_state;
-    String uid, taskId;
+    String path, taskId;
     CheckBox checkBox;
 
+    FirebaseDatabase myDb;
     DatabaseReference tasksRef;
 
 
@@ -69,13 +71,13 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         setSupportActionBar(toolbar);
         toolbar.inflateMenu(R.menu.toolbar_menu);
 
-        // Instance of database
-        FirebaseDatabase myDb = FirebaseDatabase.getInstance();
-        tasksRef = myDb.getReference("curr_tasks");
-
         task_state = getIntent().getStringExtra(EXTRA_TASK_STATE);
         taskId = getIntent().getStringExtra("task_id");
-        uid = getIntent().getStringExtra("uid");
+        path = getIntent().getStringExtra("path");
+
+        // Instance of database
+        myDb = FirebaseDatabase.getInstance();
+        tasksRef = myDb.getReference().child(path);
 
         title = (TextView) findViewById(R.id.titleView);
         description = (EditText) findViewById(R.id.notesTextView);
@@ -107,10 +109,10 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
                 throw new NullPointerException();
             }
             if (taskId.trim().isEmpty()){
-                newTaskRef = tasksRef.child(uid).push();
+                newTaskRef = tasksRef.push();
 
             } else {
-                newTaskRef = tasksRef.child(uid).child(taskId);
+                newTaskRef = tasksRef.child(taskId);
             }
             newTaskRef.setValue(data);
             onBackPressed();
@@ -123,17 +125,18 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
             data = BaseEmul.defaultTask;
         else { // Load existing data
 
-            DatabaseReference curTaskRef = tasksRef.child(uid).child(taskId);
+            DatabaseReference curTaskRef = tasksRef.child(taskId);
 
             curTaskRef.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
-                    data = mutableData.getValue(myTask.class);
-                    title.setText(data.task_name);
-                    description.setText(data.description);
-                    date.setText(data.date);
-                    checkBox.setChecked(data.important);
-
+                    if (mutableData.getValue() != null) {
+                        data = mutableData.getValue(myTask.class);
+                        title.setText(data.task_name);
+                        description.setText(data.description);
+                        date.setText(data.date);
+                        checkBox.setChecked(data.important);
+                    }
                     return Transaction.success(mutableData);
                 }
 
