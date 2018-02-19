@@ -53,7 +53,8 @@ public class SolvedTasksFragment extends Fragment {
             myDb = FirebaseDatabase.getInstance();
             Log.d("DBDBDBDBD",myDb != null ? "OK" : "Oops" );
             DatabaseReference solvedTasksRef = myDb.getReference("solved_tasks").child(uid);
-            solvedAdapter = new SolvedAdapter(getActivity(), solvedTasksRef);
+            DatabaseReference groupTasksRef = myDb.getReference("solved_group_tasks_user").child(uid);
+            solvedAdapter = new SolvedAdapter(getActivity(), solvedTasksRef, groupTasksRef);
             mRecyclerView.setAdapter(solvedAdapter);
 
         }
