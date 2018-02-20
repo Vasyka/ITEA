@@ -49,6 +49,7 @@
         app:layout_constraintVertical_bias="0.142"
         app:srcCompat="@mipmap/cat_tea" />
 
+   <!--
     <View
         android:id="@+id/view"
         style="@style/Divider"
@@ -60,6 +61,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.338" />
+
+        -->
 
     <TextView
         android:id="@+id/group_description"

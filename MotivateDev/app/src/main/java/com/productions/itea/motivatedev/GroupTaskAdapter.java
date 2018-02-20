@@ -194,11 +194,11 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                         }
                     });
 
-                    Toast.makeText(mContext, "You got a new task", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Вы получили новое задание!", Toast.LENGTH_SHORT).show();
                 }
 
                 else {
-                    Toast.makeText(mContext,"You removed the task",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext,"Вы удалили задание.",Toast.LENGTH_SHORT).show();
 
                     /*// Deleting the task from current tasks db and adding to solved
                     String curUser = mRef.getKey();

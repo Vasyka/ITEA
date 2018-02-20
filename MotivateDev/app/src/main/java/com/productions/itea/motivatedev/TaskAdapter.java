@@ -361,7 +361,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                                     view.getContext().startActivity(intent);
                                 }
                                 else
-                                    Toast.makeText(mContext, "It is a group task. You can't change it!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mContext, "Это групповое задние. Вы не можете его изменить!", Toast.LENGTH_SHORT).show();
 
                                 return true;
                             case R.id.delete_task:
