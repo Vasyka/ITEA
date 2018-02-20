@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    >
 
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
@@ -26,7 +27,9 @@
                 android:id="@+id/chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="false">
+                android:layout_marginTop="4dp"
+                android:animateLayoutChanges="false"
+                android:paddingLeft="10dp">
 
             </com.tylersuehr.chips.ChipView>
 
@@ -59,7 +62,7 @@
                     android:padding="4dp"
                     android:paddingStart="8dp"
                     android:text="First task"
-                    android:textSize="24sp" />
+                    android:textSize="18sp" />
 
 
             </LinearLayout>
@@ -71,8 +74,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="38dp"
             android:layout_marginStart="8dp"
+            android:background="@color/bright_green"
             android:text="Done!" />
 
     </android.support.v7.widget.CardView>

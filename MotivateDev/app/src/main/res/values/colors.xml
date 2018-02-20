@@ -11,4 +11,13 @@
     <color name="material_green_a200">#69F0AE</color>
     <color name="material_lime_a700">#AEEA00</color>
     <color name="material_orange_a700">#ef6c00</color>
+
+    <color name="dark_green">#439400</color>
+    <color name="light_green">#A9F16C</color>
+    <color name="cherry">#94002D</color>
+    <color name="justgreen">#64AA2B</color>
+    <color name="middlegreen">#8EF13C</color>
+    <color name="grey">#757575</color>
+    <color name="black">#000000</color>
+    <color name="bright_green">#a8e621</color>
 </resources>

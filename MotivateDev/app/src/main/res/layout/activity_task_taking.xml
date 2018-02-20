@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.productions.itea.motivatedev.TaskTakingActivity">
-
+    tools:context="com.productions.itea.motivatedev.TaskTakingActivity"
+    android:background="@color/material_green_50">
+    <include layout="@layout/toolbar_layout"/>
 </android.support.constraint.ConstraintLayout>

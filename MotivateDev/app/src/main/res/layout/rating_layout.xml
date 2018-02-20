@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="clip_horizontal"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@color/material_green_50">
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ratecard_view"

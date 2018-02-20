@@ -5,14 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.productions.itea.motivatedev.GroupsSearchActivity">
+    tools:context="com.productions.itea.motivatedev.GroupsSearchActivity"
+    android:background="@color/material_green_50">
 
     <include layout="@layout/toolbar_layout" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/search_rec"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="0dp"
+        android:paddingTop="20dp">
 
     </android.support.v7.widget.RecyclerView>
 

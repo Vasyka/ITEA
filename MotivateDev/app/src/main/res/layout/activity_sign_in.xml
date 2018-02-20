@@ -6,35 +6,38 @@
     android:layout_height="match_parent"
     tools:context="com.productions.itea.motivatedev.SignInActivity">
 
+<include layout="@layout/toolbar_layout" />
+
     <CheckBox
         android:id="@+id/checkBox"
-        android:layout_width="235dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="310dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginTop="91dp"
+        android:layout_width="285dp"
+        android:layout_height="42dp"
+        android:background="@color/bright_green"
+        android:paddingLeft="8dp"
         android:text="Sign in activity?"
-        android:textSize="40sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textAlignment="textStart"
+        android:textColor="@color/black"
+        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.506"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="174dp" />
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="142dp"
-        android:layout_height="84dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginStart="270dp"
-        android:layout_marginTop="455dp"
-        android:onClick="signOut"
+        android:layout_width="128dp"
+        android:layout_height="60dp"
+
+        android:layout_marginBottom="80dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@color/bright_green"
         android:text="EXIT"
-        android:textSize="40sp"
+        android:textAlignment="center"
+        android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.814"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.916" />
+        app:layout_constraintHorizontal_bias="0.545"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
