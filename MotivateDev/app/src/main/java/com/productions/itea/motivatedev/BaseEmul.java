@@ -14,7 +14,7 @@ import java.util.Map;
 public class BaseEmul {
 
     public static Map<String, myTask> myTasks = new HashMap<String, myTask>();
-    public static myTask defaultTask = new myTask("New task", "description",
+    public static myTask defaultTask = new myTask("Новая задача", "Описание задчи",
             new Date(1980, 01, 01), null, false);
 
 }

@@ -7,7 +7,7 @@
     android:background="@color/material_green_50"
     tools:context="com.productions.itea.motivatedev.GroupActivity">
 
-    <include layout="@layout/toolbar_layout" />
+<include layout="@layout/toolbar_layout"/>
 
     <TextView
         android:id="@+id/group_title"
@@ -18,6 +18,7 @@
         android:layout_marginEnd="124dp"
         android:layout_marginStart="8dp"
         android:padding="8dp"
+        android:text="Cats"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -52,13 +53,10 @@
         android:id="@+id/view"
         style="@style/Divider"
         android:layout_height="2dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/group_task_rec"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_description"
-        app:layout_constraintVertical_bias="0.338" />
+        app:layout_constraintTop_toBottomOf="@+id/group_description" />
 
     <TextView
         android:id="@+id/group_description"
@@ -68,6 +66,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:padding="8dp"
+        android:text="Hello! We are a new growing community of cat's lovers. We want to make cats' life better!"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textSize="18sp"
         android:textStyle="normal"
@@ -77,13 +76,11 @@
         app:layout_constraintTop_toBottomOf="@+id/group_title" />
 
     <LinearLayout
-        android:id="@+id/btns"
         android:layout_width="135dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="10dp"
         android:layout_marginTop="14dp"
-        android:gravity="center_vertical|center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,19 +110,16 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/group_task_rec"
-        android:layout_width="331dp"
-        android:layout_height="221dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:layout_marginBottom="160dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="128dp"
         android:layout_marginTop="8dp"
         android:paddingLeft="0dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@+id/group_description"
+        app:layout_constraintVertical_bias="0.309" />
 
 </android.support.constraint.ConstraintLayout>
 

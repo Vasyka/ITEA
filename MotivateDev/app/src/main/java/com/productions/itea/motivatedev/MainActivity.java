@@ -154,10 +154,10 @@ public class MainActivity extends AppCompatActivity
             tab = (TabLayout) findViewById(R.id.tab_id);
             mPager = (ViewPager) findViewById(R.id.pager);
             mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-            mPagerAdapter.AddFragment(new MyTasksFragment(), "My Tasks");
-            mPagerAdapter.AddFragment(new MyGroupsFragment(), "My Groups");
-            mPagerAdapter.AddFragment(new ImportantFragment(), "My Trophies");
-            mPagerAdapter.AddFragment(new SolvedTasksFragment(), "Solved Tasks");
+            mPagerAdapter.AddFragment(new MyTasksFragment(), "Задачи");
+            mPagerAdapter.AddFragment(new MyGroupsFragment(), "Группы");
+            mPagerAdapter.AddFragment(new ImportantFragment(), "Трофеи");
+            mPagerAdapter.AddFragment(new SolvedTasksFragment(), "Закрытые задачи");
             tab.setupWithViewPager(mPager);
             mPager.setAdapter(mPagerAdapter);
 

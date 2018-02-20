@@ -332,7 +332,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                                     view.getContext().startActivity(intent); */
                                 }
                                 else
-                                    Toast.makeText(mContext, "It is a group task. You can't change it!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mContext, "Это задание группы. Вы не можете его изменить!", Toast.LENGTH_SHORT).show();
                                 return true;
                             case R.id.delete_task:
                                 AlertDialog.Builder builder;
@@ -341,8 +341,8 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                                 } else {
                                     builder = new AlertDialog.Builder(mContext);
                                 }
-                                builder.setTitle("Delete task")
-                                        .setMessage("Are you sure you want to delete this task?")
+                                builder.setTitle("Удалить задачу")
+                                        .setMessage("Вы уверены, что хотите удалить эту задачу?")
                                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // continue with delete

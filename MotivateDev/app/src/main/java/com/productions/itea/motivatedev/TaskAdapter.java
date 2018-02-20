@@ -371,8 +371,8 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                                 } else {
                                     builder = new AlertDialog.Builder(mContext);
                                 }
-                                builder.setTitle("Delete task")
-                                        .setMessage("Are you sure you want to delete this task?")
+                                builder.setTitle("Удалить задачу")
+                                        .setMessage("Вы уверены, что хотите удалить эту задачу?")
                                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 // continue with delete
@@ -407,7 +407,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
     // Create new views (invoked by the layout manager)
     public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.task_layout, parent, false);
 
         // set the view's size, margins, paddings and layout parameters

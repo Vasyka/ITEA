@@ -10,17 +10,17 @@ android:background="@color/material_green_50">
 
     <include layout="@layout/toolbar_layout"/>
 
-<TextView
-    android:id="@+id/rating_title"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:padding="8dp"
-    android:text="Rating"
-    android:textAlignment="center"
-    android:textColor="@color/black"
-    android:textSize="30sp"
-    android:textStyle="bold" />
+    <TextView
+        android:id="@+id/rating_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:text="Рейтинг"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rating_rec"

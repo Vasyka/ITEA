@@ -4,17 +4,17 @@
     <item
         android:id="@+id/edit_task"
         android:icon="@android:drawable/ic_menu_edit"
-        android:title="Edit"
+        android:title="Изменить"
         app:showAsAction="never" />
     <item
         android:id="@+id/delete_task"
         android:icon="@android:drawable/ic_menu_delete"
-        android:title="Delete"
+        android:title="Удалить"
         app:showAsAction="never" />
     <item
         android:id="@+id/important_task"
         android:icon="@android:drawable/star_big_on"
-        android:title="Make task important"
+        android:title="Пометить задачу как важную"
         app:showAsAction="never" />
 
 </menu>
