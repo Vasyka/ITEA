@@ -60,7 +60,7 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
     private List<myGroupTask> myGroupTasks = new ArrayList<>();
 
 
-    public GroupTaskAdapter(Context context, DatabaseReference ref, OnItemClickListener listener) {
+    GroupTaskAdapter(Context context, DatabaseReference ref, OnItemClickListener listener) {
         this.listener = listener;
         mContext = context;
         mRef = ref;
@@ -154,16 +154,20 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
 
     // Place item[position] in holder
     public void onBindViewHolder(final GroupTaskViewHolder holder, final int position) {
+
         holder.groupTaskView.setText(myGroupTasks.get(position).task_name);
 
-        // Get task
-        holder.getTaskCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference group_user = mRef.getRoot().child("group_tasks_user").child(uid);
+
+        class CheckListener implements CompoundButton.OnCheckedChangeListener {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
 
                     // Add the group task to the user's space
-                    final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
                     final DatabaseReference grouptaskuser = mRef.getRoot().child("group_tasks_user");
 
                     miniTask miniTask = new miniTask(mRef.getKey(), myGroupTasks.get(position).important);
@@ -190,11 +194,6 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                         }
                     });
 
-
-
-
-
-
                     Toast.makeText(mContext, "You got a new task", Toast.LENGTH_SHORT).show();
                 }
 
@@ -210,7 +209,33 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                     // getAdapterPosition() can cause some errors:(*/
                 }
             }
+        }
+
+        final CheckListener chekListener = new CheckListener();
+        group_user.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChild(myGroupTaskIds.get(position))) {
+                    //SLEDI ZA RUKAMI
+
+                    //OTVYAZAL
+                    holder.getTaskCheckBox.setOnCheckedChangeListener(null);
+                    //POMETIL
+                    holder.getTaskCheckBox.setChecked(true);
+                    //PRIVYAZAL
+                    holder.getTaskCheckBox.setOnCheckedChangeListener(chekListener);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
+
+        // Get task
+        holder.getTaskCheckBox.setOnCheckedChangeListener(chekListener);
 
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -236,4 +261,6 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
     }
 
 }
+
+
 
