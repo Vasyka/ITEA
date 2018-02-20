@@ -147,7 +147,6 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
                     Log.d(TAG, "myTaskTransaction:onComplete:" + databaseError);
                 }
             });
-
         }
         title.setText(data.task_name);
         description.setText(data.description);

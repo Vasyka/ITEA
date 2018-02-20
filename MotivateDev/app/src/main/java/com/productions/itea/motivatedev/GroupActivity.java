@@ -3,6 +3,7 @@ package com.productions.itea.motivatedev;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -15,15 +16,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+import com.google.firebase.database.ValueEventListener;
 
 
 public class GroupActivity extends AppCompatActivity implements GroupTaskAdapter.OnItemClickListener {
@@ -61,11 +65,25 @@ public class GroupActivity extends AppCompatActivity implements GroupTaskAdapter
             mRecyclerView = (RecyclerView) findViewById(R.id.group_task_rec);
             mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
             String uid = curUser.getUid();
 
             myDb = FirebaseDatabase.getInstance();
 
             DatabaseReference groupRef = myDb.getReference("group_tasks").child(group_id);
+            DatabaseReference groupItself = myDb.getReference("groups").child(group_id);
+            groupItself.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    ((TextView)findViewById(R.id.group_title)).setText(dataSnapshot.child("group_name").getValue().toString());
+                    ((TextView)findViewById(R.id.group_description)).setText(dataSnapshot.child("description").getValue().toString());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
             groupTaskAdapter = new GroupTaskAdapter(this, groupRef, this);
             mRecyclerView.setAdapter(groupTaskAdapter);
 
