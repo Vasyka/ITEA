@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:animateLayoutChanges="false"
+                android:textColor="@color/black"
                 android:paddingLeft="10dp">
 
             </com.tylersuehr.chips.ChipView>
@@ -60,6 +61,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     android:padding="4dp"
+                    android:textColor="@color/black"
                     android:paddingStart="8dp"
                     android:text="First task"
                     android:textSize="18sp" />

@@ -57,7 +57,17 @@ public class MyGroupsFragment extends Fragment {
                 }
             });
             mRecyclerView = (RecyclerView) v.findViewById(R.id.groups_rec);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()) {
+                @Override
+                public void onLayoutChildren(RecyclerView.Recycler arg0, RecyclerView.State arg1) {
+                    try {
+                        super.onLayoutChildren(arg0, arg1);
+                    } catch (Exception e) {
+                        Log.d("MyGroupsFragment","onLayoutChildren :" + e.toString());
+                    }
+                }
+            });
 
             //Current groups
             String uid = curUser.getUid();
