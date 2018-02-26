@@ -72,6 +72,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
         toolbar.inflateMenu(R.menu.toolbar_menu);
 
         task_state = getIntent().getStringExtra(EXTRA_TASK_STATE);
+        Log.d(TAG,task_state);
         taskId = getIntent().getStringExtra("task_id");
         path = getIntent().getStringExtra("path");
 
@@ -131,9 +132,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
             curTaskRef.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
-                    Log.d(TAG,"TRANSACTIONNNNN");
                     if (mutableData.getValue() != null) {
-                        Log.d(TAG, "LOLLLLLLLLLLL");
                         data = mutableData.getValue(myTask.class);
                         title.setText(data.task_name);
                         description.setText(data.description);

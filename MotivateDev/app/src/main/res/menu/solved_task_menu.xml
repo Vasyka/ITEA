@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/delete_task"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="Удалить"
         app:showAsAction="never" />
     <item
-        android:id="@+id/un_important_task"
+        android:id="@+id/important_task"
         android:icon="@android:drawable/star_big_on"
-        android:title="Пометить задачу как не важную"
+        android:title="Пометить задачу как важную"
         app:showAsAction="never" />
 
 </menu>

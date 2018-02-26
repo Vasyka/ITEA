@@ -95,21 +95,6 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.533"
-        app:layout_constraintStart_toEndOf="@+id/deleteBtn"
-        app:layout_constraintWidth_percent="30" />
-
-    <Button
-        android:id="@+id/deleteBtn"
-        android:layout_width="116dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="44dp"
-        android:background="@color/bright_green"
-        android:text="Удалить"
-        android:textAlignment="center"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="30" />
 

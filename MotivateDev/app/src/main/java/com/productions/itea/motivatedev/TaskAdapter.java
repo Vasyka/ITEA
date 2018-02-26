@@ -156,7 +156,6 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "Tasks:onCancelled", databaseError.toException());
-                Toast.makeText(mContext, "Failed to load tasks.", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -170,7 +169,6 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                 final String groupKey = dataSnapshot.child("group").getValue(String.class);
                 Log.d(TAG, "onGroupTaskChildAdded:group" + groupKey);
-
 
 
                 // get group task's information
@@ -284,7 +282,6 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "UserGroupTasks:onCancelled", databaseError.toException());
-                Toast.makeText(mContext, "Failed to load user's group tasks.", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -298,12 +295,12 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
     // Place item[position] in holder
     public void onBindViewHolder(final TaskViewHolder holder, int position) {
-        myTask task = myTasks.get(position);
+        myTask task = myTasks.get(holder.getAdapterPosition());
         holder.taskView.setText(task.task_name);
 
-        if (myTasks.get(position) instanceof myGroupTask) {
+        if (myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask) {
             holder.mChipsView.setVisibility(View.VISIBLE);
-            holder.mChipsView.setTitle(myGroups.get(position).group_name);
+            holder.mChipsView.setTitle(myGroups.get(holder.getAdapterPosition()).group_name);
             holder.mChipsView.setHasAvatarIcon(false);
             holder.mChipsView.setDeletable(false);
 

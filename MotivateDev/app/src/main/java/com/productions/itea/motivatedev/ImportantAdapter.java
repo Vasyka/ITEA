@@ -69,9 +69,15 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
+                Log.d(TAG, "onChildAdded:" + dataSnapshot.child("important").getValue(Boolean.class));
+
+                // Check that new task is important for user
+                Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
+
+                if (important) {
+
                 // A new task has been added, add it to the displayed list
                 myTask mytask = dataSnapshot.getValue(myTask.class);
-                if (mytask.important) {
 
                     // Update
                     importantIds.add(dataSnapshot.getKey());
@@ -87,22 +93,56 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                 Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
 
                 // A task has changed, use the key to determine if we are displaying this
-                // task and if so displayed the changed task.
-                myTask mytask = dataSnapshot.getValue(myTask.class);
-                if (mytask.important) {
+                // task and is it still important if so displayed the changed task.
 
-                    String taskKey = dataSnapshot.getKey();
+                String taskKey = dataSnapshot.getKey();
+                Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
 
-                    int taskIndex = importantIds.indexOf(taskKey);
-                    if (taskIndex > -1) {
+                Log.d(TAG, "onChildAdded:" + important);
+
+                int taskIndex = importantIds.indexOf(taskKey);
+                if (taskIndex > -1) {
+
+                    // Check that this task is still important for user
+                    if (important) {
+
+                        myTask mytask = dataSnapshot.getValue(myTask.class);
+
                         // Replace with the new data
                         myImportant.set(taskIndex, mytask);
 
                         //Update Recycleview
                         notifyItemChanged(taskIndex);
-                    } else {
-                        Log.w(TAG, "onChildChanged:unknown_child:" + taskKey);
                     }
+                    else { // task isn't important now
+
+                        // Remove data from the list
+                        myImportant.remove(taskIndex);
+                        importantIds.remove(taskIndex);
+                        myGroups.remove(taskIndex);
+
+                        //Update Recycleview
+                        notifyItemRemoved(taskIndex);
+                     }
+
+                } else {
+                    // Check if this task is now important for user
+                    if (important) {
+
+                        // A new task has been added, add it to the displayed list
+                        myTask mytask = dataSnapshot.getValue(myTask.class);
+
+                        // Update
+                        importantIds.add(dataSnapshot.getKey());
+                        myImportant.add(mytask);
+                        myGroups.add(new myGroup("", "", null));
+
+                        //Update Recycleview
+                        notifyItemInserted(myImportant.size() - 1);
+                    }
+                    else {
+                            Log.w(TAG, "onChildChanged:unknown_child:" + taskKey);
+                        }
                 }
             }
 
@@ -144,7 +184,6 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "Tasks:onCancelled", databaseError.toException());
-                Toast.makeText(mContext, "Failed to load tasks.", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -152,6 +191,7 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 final String groupTaskKey = dataSnapshot.getKey();
+
                 Log.d(TAG, "onSolvedGroupTaskChildAdded:" + groupTaskKey);
 
                 // A new task has been added, add it to the displayed list
@@ -159,7 +199,9 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                 final String groupKey = dataSnapshot.child("group").getValue(String.class);
                 Log.d(TAG, "onSolvedGroupTaskChildAdded:group" + groupKey);
 
-                Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
+                final Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
+                Log.d(TAG, String.valueOf(important));
+
                 if (important) {
 
                     // get group task's information
@@ -169,6 +211,7 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
+                                task.important = important;
                                 myImportant.add(task);
                                 importantIds.add(groupTaskKey);
                                 notifyDataSetChanged();
@@ -215,28 +258,85 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                 // A task has changed, use the key to determine if we are displaying this
                 // task and if so displayed the changed task.
 
-                String groupTaskKey = dataSnapshot.getKey();
-                Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
-                if (important) {
+                final String groupKey = dataSnapshot.child("group").getValue(String.class);
+                Log.d(TAG, "onSolvedGroupTaskChildAdded:group" + groupKey);
+
+                final String groupTaskKey = dataSnapshot.getKey();
+                final Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
+                
 
                 int taskIndex = importantIds.indexOf(groupTaskKey);
 
-
-
                 if (taskIndex > -1) {
 
-                    myImportant.get(taskIndex).important = dataSnapshot.child(groupTaskKey).child("imprtant").getValue(Boolean.class);
+                    // Check that this task is still important for user
+                    if (important) {
 
-                    String groupKey = dataSnapshot.child(groupTaskKey).child("group").getValue(String.class);
-                    //if (!myGroups.get(taskIndex).equals(groupKey))
-                    Log.w(TAG, "onGroupTaskChildChanged::unknown_group_key" + groupKey);
+                        myImportant.get(taskIndex).important = important;
 
-                    //Update Recycleview
-                    notifyItemChanged(taskIndex);
-                }
-                }
-                else {
-                    Log.w(TAG, "onGroupTaskChildChanged:unknown_child:" + groupTaskKey);
+                        //Update Recycleview
+                        notifyItemChanged(taskIndex);
+                    } else { // task isn't important now
+
+                        // Remove data from the list
+                        myImportant.remove(taskIndex);
+                        importantIds.remove(taskIndex);
+                        myGroups.remove(taskIndex);
+
+                        //Update Recycleview
+                        notifyItemRemoved(taskIndex);
+                    }
+                } else {
+                    // Check if this task is now important for user
+                    if (important) {
+
+                        // get group task's information
+                        DatabaseReference myGroupRef = groupTaskRef.getRoot().child("group_tasks").child(groupKey).child(groupTaskKey);
+                        myGroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
+                                    task.important = important;
+                                    myImportant.add(task);
+                                    importantIds.add(groupTaskKey);
+                                    notifyDataSetChanged();
+                                }
+                                else
+                                    Log.d(TAG,"Oops. Group task with id " + groupTaskKey + " doesn't exist now");
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.d(TAG, "getSolvedGroupTask:onCancelled:", databaseError.toException() );
+                            }
+                        });
+
+                        // get group info
+                        DatabaseReference groupRef = groupTaskRef.getRoot().child("groups").child(groupKey);
+                        groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    myGroup group = dataSnapshot.getValue(myGroup.class);
+                                    myGroups.add(group);
+                                    notifyDataSetChanged();
+                                }
+                                else
+                                    Log.d(TAG,"Oops. Group with id " + groupKey + " doesn't exist now");
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.d(TAG, "getGroupTask:onCancelled:", databaseError.toException() );
+                            }
+                        });
+
+                        //Update Recycleview
+                        notifyItemInserted(myImportant.size() - 1);
+                    } else {
+                        Log.w(TAG, "onGroupTaskChildChanged:unknown_child:" + groupTaskKey);
+                    }
                 }
             }
 
@@ -257,7 +357,6 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
 
                     //Update Recycleview
                     notifyItemRemoved(taskIndex);
-                    notifyDataSetChanged();
 
                 } else {
                     Log.w(TAG, "onGroupTaskChildChanged:unknown_child:" + groupTaskKey);
@@ -279,7 +378,6 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "UserGroupTasks:onCancelled", databaseError.toException());
-                Toast.makeText(mContext, "Failed to load user's group tasks.", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -288,13 +386,13 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
     }
 
     @Override
-    public void onBindViewHolder(final ImportantViewHolder holder, final int position) {
+    public void onBindViewHolder(final ImportantViewHolder holder, int position) {
 
-        holder.taskView.setText(myImportant.get(position).task_name);
+        holder.taskView.setText(myImportant.get(holder.getAdapterPosition()).task_name);
 
-        if (myImportant.get(position) instanceof myGroupTask) {
+        if (myImportant.get(holder.getAdapterPosition()) instanceof myGroupTask) {
             holder.mChipsView.setVisibility(View.VISIBLE);
-            holder.mChipsView.setTitle(myGroups.get(position).group_name);
+            holder.mChipsView.setTitle(myGroups.get(holder.getAdapterPosition()).group_name);
             holder.mChipsView.setHasAvatarIcon(false);
             holder.mChipsView.setDeletable(false);
 
@@ -317,14 +415,6 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                     // Handle clicks on menu items
                     public boolean onMenuItemClick (MenuItem menuItem){
                         switch (menuItem.getItemId()) {
-                            case R.id.edit_task:
-                                /// Check that the task isn't a group task
-                                if (!(myImportant.get(holder.getAdapterPosition()) instanceof myGroupTask)) {
-                                    Toast.makeText(mContext, "Это ваше достижение. Вы не можете его менять!", Toast.LENGTH_SHORT).show();
-                                }
-                                else
-                                    Toast.makeText(mContext, "Это задание группы. Вы не можете его изменить!", Toast.LENGTH_SHORT).show();
-                                return true;
                             case R.id.delete_task:
                                 AlertDialog.Builder builder;
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -353,12 +443,13 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                                         .show();
                                 return true;
                             case R.id.un_important_task: // Make the task unimportant if it is important
-                                if (myImportant.get(position).important) {
+                                if (myImportant.get(holder.getAdapterPosition()).important) {
                                     if (myImportant.get(holder.getAdapterPosition()) instanceof myGroupTask)
-                                        groupTaskRef.child(importantIds.get(position)).child("important").setValue(false);
+                                        groupTaskRef.child(importantIds.get(holder.getAdapterPosition())).child("important").setValue(false);
                                     else
-                                        userTaskRef.child(importantIds.get(position)).child("important").setValue(false);
+                                        userTaskRef.child(importantIds.get(holder.getAdapterPosition())).child("important").setValue(false);
                                 }
+
                             default:
                                 return false;
                         }

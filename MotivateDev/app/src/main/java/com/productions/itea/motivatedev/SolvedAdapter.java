@@ -146,7 +146,6 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "Tasks:onCancelled", databaseError.toException());
-                Toast.makeText(mContext, "Failed to load tasks.", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -158,6 +157,8 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
                 // A new task has been added, add it to the displayed list
 
+                final Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
+
                 final String groupKey = dataSnapshot.child("group").getValue(String.class);
                 Log.d(TAG, "onSolvedGroupTaskChildAdded:group" + groupKey);
 
@@ -168,6 +169,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
+                            task.important = important;
                             mySolved.add(task);
                             solvedIds.add(groupTaskKey);
                             notifyDataSetChanged();
@@ -216,15 +218,18 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                 // task and if so displayed the changed task.
 
                 String groupTaskKey = dataSnapshot.getKey();
+                Boolean important = dataSnapshot.child("important").getValue(Boolean.class);
+
 
                 int taskIndex = solvedIds.indexOf(groupTaskKey);
                 if (taskIndex > -1) {
 
-                    mySolved.get(taskIndex).important = dataSnapshot.child(groupTaskKey).child("imprtant").getValue(Boolean.class);
+
+                    mySolved.get(taskIndex).important = important;
 
                     String groupKey = dataSnapshot.child(groupTaskKey).child("group").getValue(String.class);
                     //if (!myGroups.get(taskIndex).equals(groupKey))
-                    Log.w(TAG, "onGroupTaskChildChanged::unknown_group_key" + groupKey);
+                    //    Log.w(TAG, "onGroupTaskChildChanged::unknown_group_key" + groupKey);
 
                     //Update Recycleview
                     notifyItemChanged(taskIndex);
@@ -251,7 +256,6 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
                     //Update Recycleview
                     notifyItemRemoved(taskIndex);
-                    notifyDataSetChanged();
 
                 } else {
                     Log.w(TAG, "onGroupTaskChildChanged:unknown_child:" + groupTaskKey);
@@ -273,7 +277,6 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.w(TAG, "UserGroupTasks:onCancelled", databaseError.toException());
-                Toast.makeText(mContext, "Failed to load user's group tasks.", Toast.LENGTH_SHORT).show();
             }
         };
 
@@ -292,13 +295,13 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
     }
 
     @Override
-    public void onBindViewHolder(final SolvedViewHolder holder, final int position) {
-        holder.solvedView.setText(mySolved.get(position).task_name);
+    public void onBindViewHolder(final SolvedViewHolder holder, int position) {
+        holder.solvedView.setText(mySolved.get(holder.getAdapterPosition()).task_name);
 
 
-        if (mySolved.get(position) instanceof myGroupTask) {
+        if (mySolved.get(holder.getAdapterPosition()) instanceof myGroupTask) {
             holder.mChipsView.setVisibility(View.VISIBLE);
-            holder.mChipsView.setTitle(myGroups.get(position).group_name);
+            holder.mChipsView.setTitle(myGroups.get(holder.getAdapterPosition()).group_name);
             holder.mChipsView.setHasAvatarIcon(false);
             holder.mChipsView.setDeletable(false);
 
@@ -316,30 +319,12 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
             public void onClick(final View view) {
                 PopupMenu popup = new PopupMenu(mContext, holder.menuImageButton);
                 MenuInflater inflater = popup.getMenuInflater();
-                inflater.inflate(R.menu.task_menu, popup.getMenu());
+                inflater.inflate(R.menu.solved_task_menu, popup.getMenu());
 
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     // Handle clicks on menu items
                     public boolean onMenuItemClick (MenuItem menuItem){
                         switch (menuItem.getItemId()) {
-                            case R.id.edit_task:
-
-                               /// Check that the task isn't a group task
-                                if (!(mySolved.get(holder.getAdapterPosition()) instanceof myGroupTask)) {
-
-                                    Intent intent = new Intent(mContext, TaskEditingActivity.class);
-                                    intent.putExtra(EXTRA_TASK_STATE, "Edit");
-
-                                    String taskID = solvedIds.get(holder.getAdapterPosition());
-                                    intent.putExtra("task_id", taskID);
-
-                                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                                    intent.putExtra("path", "/solved_tasks/" + uid + "/");
-                                    view.getContext().startActivity(intent);
-                                }
-                                else
-                                    Toast.makeText(mContext, "Это задание группы. Вы не можете его изменить!", Toast.LENGTH_SHORT).show();
-                                return true;
                             case R.id.delete_task:
                                 AlertDialog.Builder builder;
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -368,11 +353,17 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                                         .show();
                                 return true;
                             case R.id.important_task: // Make the task important if it isn't important
-                                if (!mySolved.get(position).important) {
+                                Log.d(TAG,String.valueOf(holder.getAdapterPosition()));
+                                Log.d(TAG,solvedIds.get(holder.getAdapterPosition()));
+                                Log.d(TAG,mySolved.get(holder.getAdapterPosition()).task_name);
+                                Log.d(TAG,String.valueOf(mySolved.get(holder.getAdapterPosition()).important));
+                                if (mySolved.get(holder.getAdapterPosition()) == null)
+                                    Log.d(TAG, "FJSJDKGH");
+                                if (!mySolved.get(holder.getAdapterPosition()).important) {
                                     if (mySolved.get(holder.getAdapterPosition()) instanceof myGroupTask)
-                                        groupTaskRef.child(solvedIds.get(position)).child("important").setValue(true);
+                                        groupTaskRef.child(solvedIds.get(holder.getAdapterPosition())).child("important").setValue(true);
                                     else
-                                        userTaskRef.child(solvedIds.get(position)).child("important").setValue(true);
+                                        userTaskRef.child(solvedIds.get(holder.getAdapterPosition())).child("important").setValue(true);
                                 }
                                 return true;
                             default:

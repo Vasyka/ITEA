@@ -24,4 +24,5 @@
         <activity android:name=".GroupsSearchActivity"></activity>
     </application>
 
+
 </manifest>
