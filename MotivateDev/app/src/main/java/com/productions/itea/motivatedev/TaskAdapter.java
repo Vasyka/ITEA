@@ -28,6 +28,8 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 import com.tylersuehr.chips.ChipView;
 
@@ -36,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static android.view.View.GONE;
+import static android.view.View.TRANSLATION_X;
 
 
 class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
@@ -60,7 +63,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     }
 
     private Context mContext;
-    private DatabaseReference userTaskRef;
+    private DatabaseReference curTaskRef;
     private DatabaseReference groupTaskRef;
 
     private List<String> myTaskIds = new ArrayList<>();
@@ -69,10 +72,10 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     private List<myGroup> myGroups = new ArrayList<>();
 
 
-    TaskAdapter(Context context, DatabaseReference usertaskref, DatabaseReference grouptaskref) {
+    TaskAdapter(Context context, DatabaseReference curtaskref, DatabaseReference grouptaskref) {
 
         mContext = context;
-        userTaskRef = usertaskref;
+        curTaskRef = curtaskref;
         groupTaskRef = grouptaskref;
 
         ChildEventListener childEventListener = new ChildEventListener() {
@@ -160,21 +163,26 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
         ChildEventListener groupChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                String groupTaskKey = dataSnapshot.getKey();
+                final String groupTaskKey = dataSnapshot.getKey();
                 Log.d(TAG, "onGroupTaskChildAdded:" + groupTaskKey);
 
                 // A new task has been added, add it to the displayed list
 
-                final String groupKey = dataSnapshot.child("group").getValue(String.class);
+                String groupKey = dataSnapshot.child("group").getValue(String.class);
                 Log.d(TAG, "onGroupTaskChildAdded:group" + groupKey);
+
+
 
                 // get group task's information
                 DatabaseReference myGroupRef = groupTaskRef.getRoot().child("group_tasks").child(groupKey).child(groupTaskKey);
+
                 myGroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
                         myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
                         myTasks.add(task);
+                        myTaskIds.add(groupTaskKey);
                         notifyDataSetChanged();
                     }
 
@@ -189,6 +197,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                 groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
+
                         myGroup group = dataSnapshot.getValue(myGroup.class);
                         myGroups.add(group);
                         notifyDataSetChanged();
@@ -199,11 +208,6 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                         Log.d(TAG, "getGroupTask:onCancelled:", databaseError.toException() );
                     }
                 });
-
-
-                //Update
-                myTaskIds.add(groupTaskKey);
-
 
                 //Update Recycleview
                 notifyItemInserted(myTasks.size() - 1);
@@ -279,7 +283,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
         };
 
         groupTaskRef.addChildEventListener(groupChildEventListener);
-        userTaskRef.addChildEventListener(childEventListener);
+        curTaskRef.addChildEventListener(childEventListener);
     }
 
     public int getItemCount() {
@@ -316,8 +320,8 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                 // Deleting the task from current tasks db and adding to solved
 
-                DatabaseReference mainRef = userTaskRef.getRoot();
-                String curUser = userTaskRef.getKey();
+                DatabaseReference mainRef = curTaskRef.getRoot();
+                String curUser = curTaskRef.getKey();
                 DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
                 solvedTasksRef.push().setValue(myTasks.get(holder.getAdapterPosition()));
 
@@ -328,7 +332,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                     // Here must be rating counting!
 
                 } else
-                    userTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
+                    curTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
 
                 // getAdapterPosition() can cause some errors:(
             }
@@ -346,9 +350,14 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                     public boolean onMenuItemClick (MenuItem menuItem){
                         switch (menuItem.getItemId()) {
                             case R.id.edit_task:
+                                Log.d(TAG, String.valueOf(holder.getAdapterPosition()));
 
                                 // Check that the task isn't a group task
                                 if (!(myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask)) {
+
+                                    Log.d(TAG,curTaskRef.getKey());
+                                    Log.d(TAG, myTaskIds.get(holder.getAdapterPosition()));
+                                    Log.d(TAG,curTaskRef.child(myTaskIds.get(holder.getAdapterPosition())) == null ? "null" : "mya");
 
                                     Intent intent = new Intent(mContext, TaskEditingActivity.class);
                                     intent.putExtra(EXTRA_TASK_STATE, "Edit");
@@ -380,7 +389,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                                                 if (myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask)
                                                     groupTaskRef.child(task_id).removeValue();
                                                 else
-                                                    userTaskRef.child(task_id).removeValue();
+                                                    curTaskRef.child(task_id).removeValue();
                                             }
                                         })
                                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -393,7 +402,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                                 return true;
                             case R.id.important_task: // Make the task important if it isn't important
                                 if (!myTasks.get(holder.getAdapterPosition()).important)
-                                    userTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).child("important").setValue(true);
+                                    curTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).child("important").setValue(true);
                                 return true;
                             default:
                                 return false;

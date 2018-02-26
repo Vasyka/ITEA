@@ -153,13 +153,13 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
         ChildEventListener groupChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                String groupTaskKey = dataSnapshot.getKey();
-                Log.d(TAG, "onGroupTaskChildAdded:" + groupTaskKey);
+                final String groupTaskKey = dataSnapshot.getKey();
+                Log.d(TAG, "onSolvedGroupTaskChildAdded:" + groupTaskKey);
 
                 // A new task has been added, add it to the displayed list
 
                 String groupKey = dataSnapshot.child("group").getValue(String.class);
-                Log.d(TAG, "onGroupTaskChildAdded:group" + groupKey);
+                Log.d(TAG, "onSolvedGroupTaskChildAdded:group" + groupKey);
 
                 // get group task's information
                 DatabaseReference myGroupRef = groupTaskRef.getRoot().child("group_tasks").child(groupKey).child(groupTaskKey);
@@ -168,12 +168,13 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
                         mySolved.add(task);
+                        solvedIds.add(groupTaskKey);
                         notifyDataSetChanged();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.d(TAG, "getGroupTask:onCancelled:", databaseError.toException() );
+                        Log.d(TAG, "getSolvedGroupTask:onCancelled:", databaseError.toException() );
                     }
                 });
 
@@ -192,10 +193,6 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                         Log.d(TAG, "getGroupTask:onCancelled:", databaseError.toException() );
                     }
                 });
-
-
-                //Update
-                solvedIds.add(groupTaskKey);
 
 
                 //Update Recycleview

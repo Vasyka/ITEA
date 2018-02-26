@@ -73,6 +73,7 @@ public class MyTasksFragment extends Fragment {
                 }
             });
 
+
             //Current tasks
             String uid = curUser.getUid();
             myDb = FirebaseDatabase.getInstance();

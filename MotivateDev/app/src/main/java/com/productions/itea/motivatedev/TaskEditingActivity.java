@@ -121,21 +121,27 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
 
     private void loadData() {
         // Create new tenplate task
-        if (task_state.equals("Add"))
-            data = BaseEmul.defaultTask;
-        else { // Load existing data
+        Log.d(TAG,task_state);
+        data = BaseEmul.defaultTask;
+        if (task_state.equals("Edit")) { // Load existing data
 
+            Log.d(TAG,taskId);
             DatabaseReference curTaskRef = tasksRef.child(taskId);
 
             curTaskRef.runTransaction(new Transaction.Handler() {
                 @Override
                 public Transaction.Result doTransaction(MutableData mutableData) {
+                    Log.d(TAG,"TRANSACTIONNNNN");
                     if (mutableData.getValue() != null) {
+                        Log.d(TAG, "LOLLLLLLLLLLL");
                         data = mutableData.getValue(myTask.class);
                         title.setText(data.task_name);
                         description.setText(data.description);
                         date.setText(data.date);
                         checkBox.setChecked(data.important);
+                    }
+                    else {
+                        Log.d(TAG,"NOOOOOO");
                     }
                     return Transaction.success(mutableData);
                 }
@@ -148,6 +154,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
                 }
             });
         }
+        Log.d(TAG,"MYAAAAAA");
         title.setText(data.task_name);
         description.setText(data.description);
         date.setText(data.date);

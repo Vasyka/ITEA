@@ -8,9 +8,10 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+   <LinearLayout
+       android:orientation="vertical"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/avatarImg"
@@ -24,31 +25,32 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <Button
-            android:id="@+id/createBtn"
-            android:layout_width="357dp"
-            android:layout_height="65dp"
-            android:layout_marginBottom="24dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:background="@color/bright_green"
-            android:onClick="onClick"
-            android:text="Добавить задачу"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.461"
-            app:layout_constraintStart_toStartOf="parent" />
+       <android.support.v7.widget.RecyclerView
+           android:id="@+id/rec_view"
+           android:layout_width="match_parent"
+           android:layout_height="300dp"
+           android:layout_marginBottom="16dp"
+           android:layout_marginTop="16dp"
+           android:scrollbars="vertical"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rec_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="140dp"
-            android:scrollbars="vertical"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+       <Button
+           android:id="@+id/createBtn"
+           android:layout_width="357dp"
+           android:layout_height="65dp"
+           android:layout_gravity="bottom|center_horizontal"
+           android:layout_marginBottom="24dp"
+           android:layout_marginEnd="8dp"
+           android:layout_marginStart="8dp"
+           android:background="@color/bright_green"
+           android:text="Добавить задачу"
+           android:textAlignment="center"
+           android:textSize="18sp"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintHorizontal_bias="0.461"
+           app:layout_constraintStart_toStartOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+   </LinearLayout>
 </FrameLayout>
