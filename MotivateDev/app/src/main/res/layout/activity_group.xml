@@ -11,15 +11,15 @@
 
     <TextView
         android:id="@+id/group_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="206dp"
+        android:layout_height="74dp"
         android:layout_margin="8dp"
         android:layout_marginBottom="166dp"
         android:layout_marginEnd="124dp"
         android:layout_marginStart="8dp"
         android:padding="8dp"
         android:text="Cats"
-        android:textSize="30sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/group_photo"
@@ -30,8 +30,8 @@
 
     <ImageView
         android:id="@+id/group_photo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="114dp"
+        android:layout_height="114dp"
         android:layout_margin="16dp"
         android:layout_marginBottom="23dp"
         android:layout_marginEnd="160dp"
@@ -46,7 +46,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.142"
+        app:layout_constraintVertical_bias="0.134"
         app:srcCompat="@mipmap/cat_tea" />
 
    <!--
@@ -66,7 +66,7 @@
 
     <TextView
         android:id="@+id/group_description"
-        android:layout_width="149dp"
+        android:layout_width="184dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -82,15 +82,13 @@
         app:layout_constraintTop_toBottomOf="@+id/group_title" />
 
     <LinearLayout
-        android:layout_width="135dp"
+        android:layout_width="107dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/group_photo"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/group_photo">
 
         <ImageButton
             android:id="@+id/rating_image"
