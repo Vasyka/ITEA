@@ -168,7 +168,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                 // A new task has been added, add it to the displayed list
 
-                String groupKey = dataSnapshot.child("group").getValue(String.class);
+                final String groupKey = dataSnapshot.child("group").getValue(String.class);
                 Log.d(TAG, "onGroupTaskChildAdded:group" + groupKey);
 
 
@@ -179,11 +179,14 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                 myGroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
-                        myTasks.add(task);
-                        myTaskIds.add(groupTaskKey);
-                        notifyDataSetChanged();
+                        if (dataSnapshot.exists()) {
+                            myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
+                            myTasks.add(task);
+                            myTaskIds.add(groupTaskKey);
+                            notifyDataSetChanged();
+                        }
+                        else
+                            Log.d(TAG,"Oops. Group task with id " + groupTaskKey + " doesn't exist now");
                     }
 
                     @Override
@@ -197,15 +200,18 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                 groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        myGroup group = dataSnapshot.getValue(myGroup.class);
-                        myGroups.add(group);
-                        notifyDataSetChanged();
+                        if (dataSnapshot.exists()) {
+                            myGroup group = dataSnapshot.getValue(myGroup.class);
+                            myGroups.add(group);
+                            notifyDataSetChanged();
+                        }
+                        else
+                            Log.d(TAG,"Oops. Group with id " + groupKey + " doesn't exist now");
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.d(TAG, "getGroupTask:onCancelled:", databaseError.toException() );
+                        Log.d(TAG, "getGroupTask:onCancelled:", databaseError.toException());
                     }
                 });
 
@@ -314,7 +320,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
             public void onClick(View view) {
                 // Congratulations dialog
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
-                dialogBuilder.setMessage("Task was done!").
+                dialogBuilder.setMessage("Задание было выполнено!").
                         setTitle("Congratulations!!").setIcon(R.mipmap.confetti1);
                 dialogBuilder.create().show();
 
@@ -322,19 +328,35 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                 DatabaseReference mainRef = curTaskRef.getRoot();
                 String curUser = curTaskRef.getKey();
-                DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
-                solvedTasksRef.push().setValue(myTasks.get(holder.getAdapterPosition()));
 
                 // Check that the task is a group task
                 if (myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask) {
-                    groupTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
+
+                    final String groupTaskKey = myTaskIds.get(holder.getAdapterPosition());
+                    final DatabaseReference solvedTasksRef = mainRef.child("solved_group_tasks_user").child(curUser);
+                    groupTaskRef.child(groupTaskKey).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            String groupKey = dataSnapshot.child("group").getValue(String.class);
+                            miniTask task = new miniTask(groupKey, myTasks.get(holder.getAdapterPosition()).important);
+                            solvedTasksRef.child(groupTaskKey).setValue(task);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.d(TAG, "getGroupKey:onCancelled:", databaseError.toException());
+                        }
+                    });
+                    groupTaskRef.child(groupTaskKey).removeValue();
 
                     // Here must be rating counting!
 
-                } else
+                } else {
+                    DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
+                    solvedTasksRef.push().setValue(myTasks.get(holder.getAdapterPosition()));
                     curTaskRef.child(myTaskIds.get(holder.getAdapterPosition())).removeValue();
+                }
 
-                // getAdapterPosition() can cause some errors:(
             }
         });
 

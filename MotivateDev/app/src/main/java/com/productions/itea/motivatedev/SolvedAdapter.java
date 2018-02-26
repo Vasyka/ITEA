@@ -158,7 +158,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
                 // A new task has been added, add it to the displayed list
 
-                String groupKey = dataSnapshot.child("group").getValue(String.class);
+                final String groupKey = dataSnapshot.child("group").getValue(String.class);
                 Log.d(TAG, "onSolvedGroupTaskChildAdded:group" + groupKey);
 
                 // get group task's information
@@ -166,10 +166,14 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                 myGroupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
-                        mySolved.add(task);
-                        solvedIds.add(groupTaskKey);
-                        notifyDataSetChanged();
+                        if (dataSnapshot.exists()) {
+                            myGroupTask task = dataSnapshot.getValue(myGroupTask.class);
+                            mySolved.add(task);
+                            solvedIds.add(groupTaskKey);
+                            notifyDataSetChanged();
+                        }
+                        else
+                            Log.d(TAG,"Oops. Group task with id " + groupTaskKey + " doesn't exist now");
                     }
 
                     @Override
@@ -183,9 +187,13 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                 groupRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        myGroup group = dataSnapshot.getValue(myGroup.class);
-                        myGroups.add(group);
-                        notifyDataSetChanged();
+                        if (dataSnapshot.exists()) {
+                            myGroup group = dataSnapshot.getValue(myGroup.class);
+                            myGroups.add(group);
+                            notifyDataSetChanged();
+                        }
+                        else
+                            Log.d(TAG,"Oops. Group with id " + groupKey + " doesn't exist now");
                     }
 
                     @Override
@@ -287,6 +295,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
     public void onBindViewHolder(final SolvedViewHolder holder, final int position) {
         holder.solvedView.setText(mySolved.get(position).task_name);
 
+
         if (mySolved.get(position) instanceof myGroupTask) {
             holder.mChipsView.setVisibility(View.VISIBLE);
             holder.mChipsView.setTitle(myGroups.get(position).group_name);
@@ -317,7 +326,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
                                /// Check that the task isn't a group task
                                 if (!(mySolved.get(holder.getAdapterPosition()) instanceof myGroupTask)) {
-                                /*
+
                                     Intent intent = new Intent(mContext, TaskEditingActivity.class);
                                     intent.putExtra(EXTRA_TASK_STATE, "Edit");
 
@@ -326,7 +335,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
                                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                     intent.putExtra("path", "/solved_tasks/" + uid + "/");
-                                    view.getContext().startActivity(intent); */
+                                    view.getContext().startActivity(intent); 
                                 }
                                 else
                                     Toast.makeText(mContext, "Это задание группы. Вы не можете его изменить!", Toast.LENGTH_SHORT).show();
