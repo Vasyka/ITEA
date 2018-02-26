@@ -157,48 +157,57 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
 
         holder.groupTaskView.setText(myGroupTasks.get(position).task_name);
 
-
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference group_user = mRef.getRoot().child("group_tasks_user").child(uid);
-
         class CheckListener implements CompoundButton.OnCheckedChangeListener {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
+            public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
 
-                    // Add the group task to the user's space
+
+//                if(isChecked) {
 
                     final DatabaseReference grouptaskuser = mRef.getRoot().child("group_tasks_user");
 
-                    miniTask miniTask = new miniTask(mRef.getKey(), myGroupTasks.get(position).important);
-                    final HashMap <String, Object> task = new HashMap<>();
-                    task.put(myGroupTaskIds.get(position), miniTask);
-
-                    // Check user's existence in group_tasks_user table
-                    grouptaskuser.addListenerForSingleValueEvent(new ValueEventListener() {
+                    mRef
+                            .getRoot()
+                            .child("users")
+                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                            .child("groups")
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.child(uid).exists()) { // If it's not the first group task for user
-                                grouptaskuser.child(uid).updateChildren(task);
-                            }
-                            else { // If it's the first group task for user
-                                HashMap <String, Object> usertask = new HashMap<>();
-                                usertask.put(uid,task);
-                                grouptaskuser.updateChildren(usertask);
-                            }
-                        }
+                            if (dataSnapshot.hasChild(mRef.getKey())){
+                                if (isChecked) {
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.d(TAG,"Couldn't add group task");
-                        }
-                    });
+                                    miniTask miniTask = new miniTask(mRef.getKey(), myGroupTasks.get(position).important);
+                                    final HashMap <String, Object> task = new HashMap<>();
+                                    task.put(myGroupTaskIds.get(position), miniTask);
 
-                    Toast.makeText(mContext, "Вы получили новое задание!", Toast.LENGTH_SHORT).show();
-                }
+                                    // Check user's existence in group_tasks_user table
+                                    grouptaskuser.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            if (dataSnapshot.child(uid).exists()) { // If it's not the first group task for user
+                                                grouptaskuser.child(uid).updateChildren(task);
+                                            }
+                                            else { // If it's the first group task for user
+                                                HashMap <String, Object> usertask = new HashMap<>();
+                                                usertask.put(uid,task);
+                                                grouptaskuser.updateChildren(usertask);
+                                            }
+                                        }
 
-                else {
-                    Toast.makeText(mContext,"Вы удалили задание.",Toast.LENGTH_SHORT).show();
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+                                            Log.d(TAG,"Couldn't add group task");
+                                        }
+                                    });
+
+                                    Toast.makeText(mContext, "Вы получили новое задание!", Toast.LENGTH_SHORT).show();
+                                }
+
+                                else {
+                                    Toast.makeText(mContext,"Удаление происходит в списке заданий",Toast.LENGTH_LONG).show();
 
                     /*// Deleting the task from current tasks db and adding to solved
                     String curUser = mRef.getKey();
@@ -207,7 +216,25 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                     solvedTasksRef.push().setValue(myGroupTasks.get(holder.getAdapterPosition()));
                     mRef.child(myGroupTaskIds.get(holder.getAdapterPosition())).removeValue();
                     // getAdapterPosition() can cause some errors:(*/
-                }
+                                }
+
+                            }
+                            else {
+                                Toast.makeText(mContext, "Вы должны быть в группе, чтобы взять задание", Toast.LENGTH_SHORT).show();
+                                buttonView.setChecked(false);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+
+                    // Add the group task to the user's space
+
+
+
+
             }
         }
 
