@@ -101,7 +101,7 @@
             app:srcCompat="@mipmap/burn_sketch1" />
 
         <ImageButton
-            android:id="@+id/members_image"
+            android:id="@+id/login_image"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_margin="4dp"

@@ -77,7 +77,7 @@ public class GroupActivity extends AppCompatActivity implements GroupTaskAdapter
                 }
             });
 
-            ImageButton joinBtn = findViewById(R.id.members_image);
+            ImageButton joinBtn = findViewById(R.id.login_image);
             final DatabaseReference userRef = myDb.getReference().child("users").child(uid);
 
             joinBtn.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +107,10 @@ public class GroupActivity extends AppCompatActivity implements GroupTaskAdapter
                                         userRef.child("groups").child(group_id).removeValue();
 
                                         Log.d(TAG,"АТБАВЛЕНА");
+
+                                        ImageButton img = findViewById(R.id.login_image);
+                                        img.setImageResource(R.mipmap.logout_sketch);
+
                                         Toast.makeText(GroupActivity.this, "Вы покинули группу", Toast.LENGTH_SHORT).show();
 
                                         DatabaseReference tasks_to_delete = userRef.getRoot()
@@ -149,6 +153,10 @@ public class GroupActivity extends AppCompatActivity implements GroupTaskAdapter
                                                 userRef.child("groups").child(group_id).setValue(true);
 
                                                 Log.d(TAG,"ДАБАВЛЕНА");
+
+                                                ImageButton img = findViewById(R.id.login_image);
+                                                img.setImageResource(R.mipmap.login_sketch);
+
                                                 Toast.makeText(GroupActivity.this, "Вы вступили в группу", Toast.LENGTH_SHORT).show();
                                                 groupTaskAdapter.notifyDataSetChanged();
 
