@@ -169,10 +169,10 @@ static class GroupViewHolder extends RecyclerView.ViewHolder {
 
     // Place item[position] in holder
     public void onBindViewHolder(final GroupsAdapter.GroupViewHolder holder, int position) {
-        holder.groupView.setText(myGroups.get(position).group_name);
-        String photo_url = myGroups.get(position).photoUrl;
+        holder.groupView.setText(myGroups.get(holder.getAdapterPosition()).group_name);
+        String photo_url = myGroups.get(holder.getAdapterPosition()).photoUrl;
         if (photo_url != null)
-            holder.groupPhotoView.setImageURI(Uri.parse(myGroups.get(position).photoUrl));
+            holder.groupPhotoView.setImageURI(Uri.parse(myGroups.get(holder.getAdapterPosition()).photoUrl));
         else
             Log.d(TAG, "OOOOO");
        holder.itemView.setOnClickListener(new View.OnClickListener() {

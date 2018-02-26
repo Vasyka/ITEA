@@ -155,17 +155,36 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
     // Place item[position] in holder
     public void onBindViewHolder(final GroupTaskViewHolder holder, final int position) {
 
-        holder.groupTaskView.setText(myGroupTasks.get(position).task_name);
+        holder.groupTaskView.setText(myGroupTasks.get(holder.getAdapterPosition()).task_name);
 
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference group_user = mRef.getRoot().child("group_tasks_user").child(uid);
+
+        mRef
+                .getRoot()
+                .child("users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("groups").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChild(mRef.getKey())){
+                    holder.getTaskCheckBox.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    holder.getTaskCheckBox.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
         class CheckListener implements CompoundButton.OnCheckedChangeListener {
             @Override
             public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
-
-
-//                if(isChecked) {
-
                     final DatabaseReference grouptaskuser = mRef.getRoot().child("group_tasks_user");
 
                     mRef
@@ -179,9 +198,9 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                             if (dataSnapshot.hasChild(mRef.getKey())){
                                 if (isChecked) {
 
-                                    miniTask miniTask = new miniTask(mRef.getKey(), myGroupTasks.get(position).important);
+                                    miniTask miniTask = new miniTask(mRef.getKey(), myGroupTasks.get(holder.getAdapterPosition()).important);
                                     final HashMap <String, Object> task = new HashMap<>();
-                                    task.put(myGroupTaskIds.get(position), miniTask);
+                                    task.put(myGroupTaskIds.get(holder.getAdapterPosition()), miniTask);
 
                                     // Check user's existence in group_tasks_user table
                                     grouptaskuser.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -209,13 +228,7 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
                                 else {
                                     Toast.makeText(mContext,"Удаление происходит в списке заданий",Toast.LENGTH_LONG).show();
 
-                    /*// Deleting the task from current tasks db and adding to solved
-                    String curUser = mRef.getKey();
-                    DatabaseReference mainRef = mRef.getRoot();
-                    DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
-                    solvedTasksRef.push().setValue(myGroupTasks.get(holder.getAdapterPosition()));
-                    mRef.child(myGroupTaskIds.get(holder.getAdapterPosition())).removeValue();
-                    // getAdapterPosition() can cause some errors:(*/
+
                                 }
 
                             }
@@ -242,7 +255,7 @@ class GroupTaskAdapter extends RecyclerView.Adapter<GroupTaskAdapter.GroupTaskVi
         group_user.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.hasChild(myGroupTaskIds.get(position))) {
+                if (snapshot.hasChild(myGroupTaskIds.get(holder.getAdapterPosition()))) {
                     //SLEDI ZA RUKAMI
 
                     //OTVYAZAL
