@@ -64,7 +64,8 @@ public class ImportantFragment extends Fragment {
             String uid = curUser.getUid();
             myDb = FirebaseDatabase.getInstance();
             DatabaseReference solvedTasksRef = myDb.getReference("solved_tasks").child(uid);
-            importantAdapter = new ImportantAdapter(getActivity(), solvedTasksRef);
+            DatabaseReference groupTasksRef = myDb.getReference("solved_group_tasks_user").child(uid);
+            importantAdapter = new ImportantAdapter(getActivity(), solvedTasksRef, groupTasksRef);
             mRecyclerView.setAdapter(importantAdapter);
 
         }

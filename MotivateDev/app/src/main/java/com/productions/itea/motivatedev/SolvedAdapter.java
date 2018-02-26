@@ -335,7 +335,7 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
                                     String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                     intent.putExtra("path", "/solved_tasks/" + uid + "/");
-                                    view.getContext().startActivity(intent); 
+                                    view.getContext().startActivity(intent);
                                 }
                                 else
                                     Toast.makeText(mContext, "Это задание группы. Вы не можете его изменить!", Toast.LENGTH_SHORT).show();
@@ -368,8 +368,12 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                                         .show();
                                 return true;
                             case R.id.important_task: // Make the task important if it isn't important
-                                if (!mySolved.get(position).important)
-                                    userTaskRef.child(solvedIds.get(position)).child("important").setValue(true);
+                                if (!mySolved.get(position).important) {
+                                    if (mySolved.get(holder.getAdapterPosition()) instanceof myGroupTask)
+                                        groupTaskRef.child(solvedIds.get(position)).child("important").setValue(true);
+                                    else
+                                        userTaskRef.child(solvedIds.get(position)).child("important").setValue(true);
+                                }
                                 return true;
                             default:
                                 return false;
