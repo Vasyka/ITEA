@@ -77,7 +77,7 @@ static class GroupViewHolder extends RecyclerView.ViewHolder {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.d(TAG, "getGroup:onCancelled:", databaseError.toException() );
+                        Log.d(TAG, "getGroup:onCancelled:", databaseError.toException());
                     }
                 });
 

@@ -39,19 +39,17 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
             super(itemView);
             name = itemView.findViewById(R.id.user_name_id);
             score = itemView.findViewById(R.id.user_score_id);
-            //avatar = itemView.findViewById(R.id.avatar_image);
+            avatar = itemView.findViewById(R.id.avatar_image);
 
         }
     }
-
-
 
 
     private Context mContext;
     public DatabaseReference mRef;
 
     private List<String> myUserScoreIds = new ArrayList<>();
-    private List<Long> myUserScores = new ArrayList<>();
+    private List<UserScore> myUserScores = new ArrayList<>();
 
 
     public RatingAdapter(Context context, DatabaseReference ref) {
@@ -63,15 +61,32 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+
+                final String uid = dataSnapshot.getKey();
+                Log.d(TAG, "onRatingChildAdded:" + uid);
 
                 // A new score has been added, add it to the displayed list
-                Long myscore = dataSnapshot.getValue(Long.class);
-                Log.d(TAG, "onChildAdded:" + myscore);
+                final Long score = dataSnapshot.getValue(Long.class);
+                Log.d(TAG, "onRatingChildAdded:" + score);
 
-                // Update
-                myUserScoreIds.add(dataSnapshot.getKey());
-                myUserScores.add(myscore);
+                DatabaseReference curUserRef = mRef.getRoot().child("users").child(uid);
+                curUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        myUser myuser = dataSnapshot.getValue(myUser.class);
+
+                        // Update
+                        myUserScoreIds.add(uid);
+                        myUserScores.add(new UserScore(myuser.username, score, myuser.photoUrl));
+
+                        notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d(TAG, "getRating:onCancelled:", databaseError.toException() );
+                    }
+                });
 
                 //Update Recycleview
                 notifyItemInserted(myUserScores.size() - 1);
@@ -79,36 +94,54 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+                final String uid = dataSnapshot.getKey();
+                Log.d(TAG, "onRatingChildChanged:" + uid);
 
                 // A task has changed, use the key to determine if we are displaying this
                 // task and if so displayed the changed task.
-                Long myscore = dataSnapshot.getValue(Long.class);
+                final Long score = dataSnapshot.getValue(Long.class);
+                Log.d(TAG, "onRatingChildChanged:" + score);
 
-                String scoreKey = dataSnapshot.getKey();
-
-                int taskIndex = myUserScoreIds.indexOf(scoreKey);
+                final int taskIndex = myUserScoreIds.indexOf(uid);
                 if (taskIndex > -1) {
                     // Replace with the new data
-                    myUserScores.set(taskIndex, myscore);
+
+                    DatabaseReference curUserRef = mRef.getRoot().child("users").child(uid);
+                    curUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            myUser myuser = dataSnapshot.getValue(myUser.class);
+
+                            // Update
+                            myUserScoreIds.add(uid);
+                            myUserScores.add(new UserScore(myuser.username, score, myuser.photoUrl));
+
+                            notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.d(TAG, "getRating:onCancelled:", databaseError.toException() );
+                        }
+                    });
 
                     //Update Recycleview
                     notifyItemChanged(taskIndex);
 
                 } else {
-                    Log.w(TAG, "onChildChanged:unknown_child:" + scoreKey);
+                    Log.w(TAG, "onRatingChildChanged:unknown_child:" + uid);
                 }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+                Log.d(TAG, "onRatingChildRemoved:" + dataSnapshot.getKey());
 
                 // A task has changed, use the key to determine if we are displaying this
                 // task and if so remove it.
-                String scoreKey = dataSnapshot.getKey();
+                String uid = dataSnapshot.getKey();
 
-                int scoreIndex = myUserScoreIds.indexOf(scoreKey);
+                int scoreIndex = myUserScoreIds.indexOf(uid);
                 if (scoreIndex > -1) {
                     // Remove data from the list
                     myUserScores.remove(scoreIndex);
@@ -118,7 +151,7 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
                     notifyItemRemoved(scoreIndex);
 
                 } else {
-                    Log.w(TAG, "onChildChanged:unknown_child:" + scoreKey);
+                    Log.w(TAG, "onChildChanged:unknown_child:" + uid);
                 }
             }
 
@@ -140,7 +173,7 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
                 Toast.makeText(mContext, "Failed to load scores.", Toast.LENGTH_SHORT).show();
             }
         };
-        ref.addChildEventListener(childEventListener);
+        ref.orderByValue().addChildEventListener(childEventListener);
     }
 
     @Override
@@ -150,13 +183,13 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
 
     @Override
     public void onBindViewHolder(RatingViewHolder holder, int position) {
-        String str = "Cat_" + position;
-        holder.name.setText(str);
-        //holder.name.setText(userNames.get(position));
-        holder.score.setText(String.valueOf(myUserScores.get(position)));
-        /*String photo_url = myUsers.get(position).photoUrl;
+
+        holder.score.setText(String.valueOf(myUserScores.get(holder.getAdapterPosition()).score));
+        holder.name.setText(myUserScores.get(holder.getAdapterPosition()).username);
+
+        /*String photo_url = myUserScores.get(holder.getAdapterPosition()).photoUrl;
         if (photo_url != null)
-            holder.avatar.setImageURI(Uri.parse(myUsers.get(position).photoUrl));
+            holder.avatar.setImageURI(Uri.parse(myUserScores.get(holder.getAdapterPosition()).photoUrl));
         else
             Log.d(TAG, "OOOOO");*/
     }

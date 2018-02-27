@@ -27,13 +27,14 @@ public class RatingActivity extends AppCompatActivity {
 
     private FirebaseDatabase myDb;
     public RatingAdapter ratingAdapter;
-
+    private static final String TAG = "RatingActivity";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating);
+
         //Toolbar
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
@@ -43,12 +44,19 @@ public class RatingActivity extends AppCompatActivity {
         FirebaseUser curUser = mAuth.getCurrentUser();
         if (curUser != null) {
 
+
             mRecyclerView = (RecyclerView) findViewById(R.id.rating_rec);
-            mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            LinearLayoutManager layoutm = new LinearLayoutManager(this);
+            layoutm.setReverseLayout(true);
+            layoutm.setStackFromEnd(true);
+            mRecyclerView.setLayoutManager(layoutm);
 
             String group_id = getIntent().getStringExtra("groupId");
+            Log.d(TAG,group_id);
             String uid = curUser.getUid();
             myDb = FirebaseDatabase.getInstance();
+
+            Log.d(TAG,"HII");
 
             DatabaseReference ratingRef = myDb.getReference("rating").child(group_id);
             ratingAdapter = new RatingAdapter(this, ratingRef);
