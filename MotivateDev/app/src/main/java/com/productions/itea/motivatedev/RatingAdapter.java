@@ -66,7 +66,7 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
                 Log.d(TAG, "onRatingChildAdded:" + uid);
 
                 // A new score has been added, add it to the displayed list
-                final Long score = dataSnapshot.getValue(Long.class);
+                final Integer score = dataSnapshot.getValue(Integer.class);
                 Log.d(TAG, "onRatingChildAdded:" + score);
 
                 DatabaseReference curUserRef = mRef.getRoot().child("users").child(uid);
@@ -99,7 +99,7 @@ class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder>
 
                 // A task has changed, use the key to determine if we are displaying this
                 // task and if so displayed the changed task.
-                final Long score = dataSnapshot.getValue(Long.class);
+                final Integer score = dataSnapshot.getValue(Integer.class);
                 Log.d(TAG, "onRatingChildChanged:" + score);
 
                 final int taskIndex = myUserScoreIds.indexOf(uid);

@@ -329,18 +329,41 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
                 // Deleting the task from current tasks db and adding to solved
 
-                DatabaseReference mainRef = curTaskRef.getRoot();
-                String curUser = curTaskRef.getKey();
+                final DatabaseReference mainRef = curTaskRef.getRoot();
+                final String curUser = curTaskRef.getKey();
 
                 // Check that the task is a group task
                 if (myTasks.get(holder.getAdapterPosition()) instanceof myGroupTask) {
 
                     final String groupTaskKey = myTaskIds.get(holder.getAdapterPosition());
+                    Log.d("RATING",groupTaskKey);
+
                     final DatabaseReference solvedTasksRef = mainRef.child("solved_group_tasks_user").child(curUser);
+
+
+
+
                     groupTaskRef.child(groupTaskKey).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             String groupKey = dataSnapshot.child("group").getValue(String.class);
+                            final DatabaseReference ratingRef = mainRef.getRoot().child("rating").child(groupKey).child(curUser);
+                            final Integer complexity = ((myGroupTask) myTasks.get(holder.getAdapterPosition())).complexity;
+
+                            ratingRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Integer score = dataSnapshot.getValue(Integer.class);
+                                    Log.d("RATING", String.valueOf(score));
+                                    ratingRef.setValue(score+complexity);
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.d(TAG, "getRating:onCancelled:", databaseError.toException());
+                                }
+                            });
+
                             miniTask task = new miniTask(groupKey, myTasks.get(holder.getAdapterPosition()).important);
                             solvedTasksRef.child(groupTaskKey).setValue(task);
                         }
@@ -352,7 +375,7 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                     });
                     groupTaskRef.child(groupTaskKey).removeValue();
 
-                    // Here must be rating counting!
+
 
                 } else {
                     DatabaseReference solvedTasksRef = mainRef.child("solved_tasks").child(curUser);
