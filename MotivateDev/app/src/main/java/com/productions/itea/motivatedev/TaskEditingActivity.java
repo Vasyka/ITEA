@@ -50,7 +50,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     TextView title;
     EditText description;
     EditText date;
-    myTask data;
+    myTask data = new myTask();
     Button save;
     String task_state;
     String path, taskId;
@@ -123,7 +123,11 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     private void loadData() {
         // Create new template task
         Log.d(TAG,task_state);
-        data = BaseEmul.defaultTask;
+        data.task_name = BaseEmul.defaultTask.task_name;
+        data.description = BaseEmul.defaultTask.description;
+        data.date = BaseEmul.defaultTask.date;
+        data.important = BaseEmul.defaultTask.important;
+        data.photoUrl = BaseEmul.defaultTask.photoUrl;
         if (task_state.equals("Edit")) { // Load existing data
 
             Log.d(TAG,taskId);
