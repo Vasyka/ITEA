@@ -36,6 +36,11 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
     private static final String TAG = "SolvedTaskAdapter";
     static final String EXTRA_TASK_STATE = "task_state";
+    private OnTaskItemClickListener listener;
+
+    public interface OnTaskItemClickListener {
+        void onItemClicked(View v, String descr);
+    }
     static class SolvedViewHolder extends RecyclerView.ViewHolder {
 
         TextView solvedView;
@@ -62,11 +67,12 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
 
     private List<myGroup> myGroups = new ArrayList<>();
 
-    public SolvedAdapter(Context context, DatabaseReference solvedRef, DatabaseReference groupRef) {
+    public SolvedAdapter(Context context, DatabaseReference solvedRef, DatabaseReference groupRef, OnTaskItemClickListener listener) {
 
         mContext = context;
         userTaskRef = solvedRef;
         groupTaskRef = groupRef;
+        this.listener = listener;
 
 
         ChildEventListener childEventListener = new ChildEventListener() {
@@ -374,7 +380,12 @@ public class SolvedAdapter extends RecyclerView.Adapter<SolvedAdapter.SolvedView
                 popup.show();
             }
         });
-
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClicked(v, mySolved.get(holder.getAdapterPosition()).description);
+            }
+        });
     }
 
     @Override

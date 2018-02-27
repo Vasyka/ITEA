@@ -33,6 +33,11 @@ import static android.view.View.GONE;
 public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.ImportantViewHolder> {
 
     private static final String TAG = "ImportantAdapter";
+    private OnTaskItemClickListener listener;
+
+    public interface OnTaskItemClickListener {
+        void onItemClicked(View v, String descr);
+    }
 
     static class ImportantViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
@@ -58,11 +63,12 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
     private List<myGroup> myGroups = new ArrayList<>();
 
 
-    ImportantAdapter(Context context, DatabaseReference solvedRef, DatabaseReference groupRef) {
+    ImportantAdapter(Context context, DatabaseReference solvedRef, DatabaseReference groupRef, OnTaskItemClickListener listener) {
 
         mContext = context;
         userTaskRef = solvedRef;
         groupTaskRef = groupRef;
+        this.listener = listener;
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
@@ -458,7 +464,12 @@ public class ImportantAdapter extends RecyclerView.Adapter<ImportantAdapter.Impo
                 popup.show();
             }
         });
-
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClicked(v, myImportant.get(holder.getAdapterPosition()).description);
+            }
+        });
     }
 
     @Override

@@ -121,7 +121,7 @@ public class TaskEditingActivity extends AppCompatActivity {//implements Compoun
     };
 
     private void loadData() {
-        // Create new tenplate task
+        // Create new template task
         Log.d(TAG,task_state);
         data = BaseEmul.defaultTask;
         if (task_state.equals("Edit")) { // Load existing data

@@ -16,7 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
-public class SolvedTasksFragment extends Fragment {
+public class SolvedTasksFragment extends Fragment implements SolvedAdapter.OnTaskItemClickListener {
 
 
 
@@ -64,7 +64,7 @@ public class SolvedTasksFragment extends Fragment {
             Log.d("DBDBDBDBD",myDb != null ? "OK" : "Oops" );
             DatabaseReference solvedTasksRef = myDb.getReference("solved_tasks").child(uid);
             DatabaseReference groupTasksRef = myDb.getReference("solved_group_tasks_user").child(uid);
-            solvedAdapter = new SolvedAdapter(getActivity(), solvedTasksRef, groupTasksRef);
+            solvedAdapter = new SolvedAdapter(getActivity(), solvedTasksRef, groupTasksRef, this);
             mRecyclerView.setAdapter(solvedAdapter);
 
         }
@@ -88,5 +88,12 @@ public class SolvedTasksFragment extends Fragment {
     }
 
 
-
+    @Override
+    public void onItemClicked(View v, String descr) {
+        Bundle bnd = new Bundle();
+        bnd.putString("description", descr);
+        GroupTaskDialog dialog = new GroupTaskDialog();
+        dialog.setArguments(bnd);
+        dialog.show(getActivity().getFragmentManager(), "Dialog");
+    }
 }

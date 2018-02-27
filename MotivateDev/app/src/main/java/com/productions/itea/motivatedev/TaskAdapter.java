@@ -45,8 +45,13 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
 
     private static final String TAG = "TaskAdapter";
     static final String EXTRA_TASK_STATE = "task_state";
+    private OnTaskItemClickListener listener;
 
-    static class TaskViewHolder extends RecyclerView.ViewHolder {
+    public interface OnTaskItemClickListener {
+        void onItemClicked(View v, String descr);
+    }
+
+        static class TaskViewHolder extends RecyclerView.ViewHolder {
         TextView taskView;
         Button doneButton;
         ImageButton menuImageButton;
@@ -72,11 +77,12 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
     private List<myGroup> myGroups = new ArrayList<>();
 
 
-    TaskAdapter(Context context, DatabaseReference curtaskref, DatabaseReference grouptaskref) {
+    TaskAdapter(Context context, DatabaseReference curtaskref, DatabaseReference grouptaskref, OnTaskItemClickListener listener) {
 
         mContext = context;
         curTaskRef = curtaskref;
         groupTaskRef = grouptaskref;
+        this.listener = listener;
 
         ChildEventListener childEventListener = new ChildEventListener() {
             @Override
@@ -429,6 +435,12 @@ class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder>{
                     }
                 });
                 popup.show();
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClicked(v, myTasks.get(holder.getAdapterPosition()).description);
             }
         });
     }
